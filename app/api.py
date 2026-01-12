@@ -1,29 +1,21 @@
-﻿from fastapi import APIRouter
-from uuid import uuid4
-from app.models import RefundRequest, RefundResponse
+﻿from __future__ import annotations
 
-refund_store = {}
+from fastapi import APIRouter, HTTPException
+
+from app.models import RefundRequest, RefundResponse
+from app.settlement import create_refund, get_refund
 
 router = APIRouter()
 
+
 @router.post("/refunds", response_model=RefundResponse)
-def create_refund(request: RefundRequest):
-    refund_id = str(uuid4())
+def create_refund_endpoint(req: RefundRequest):
+    return create_refund(req)
 
-    refund = RefundResponse(
-        refund_id=refund_id,
-        status="RECEIVED"
-    )
-
-    refund_store[refund_id] = refund
-    return refund
 
 @router.get("/refunds/{refund_id}", response_model=RefundResponse)
-def get_refund(refund_id: str):
-    refund = refund_store.get(refund_id)
-
-    if not refund:
-        return {"detail": "Refund not found"}
-
-    return refund
-
+def get_refund_endpoint(refund_id: str):
+    try:
+        return get_refund(refund_id)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Refund not found")
