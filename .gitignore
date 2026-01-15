@@ -1,26 +1,4 @@
-﻿# Python
+﻿venv/
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-
-# Databases
-*.db
-*.db-shm
-*.db-wal
-
-# Rust / sidecar (NOT PART OF PRODUCT)
-sidecar-kaspa/
-target/
-
-# Protobuf generated files
-*_pb2.py
-*_pb2_grpc.py
-
-# Embedded repos / experiments
-proto/
-test_*.py
-
-# OS
-.DS_Store
-Thumbs.db
+.env
