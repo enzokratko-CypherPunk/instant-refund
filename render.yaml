@@ -1,7 +1,12 @@
 ﻿services:
   - type: web
     name: instant-refund-api
-    env: python
-    plan: free
+    runtime: python
+    plan: starter
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: KASPA_NETWORK
+        value: mainnet
