@@ -1,43 +1,33 @@
-﻿from __future__ import annotations
+﻿"""
+Instant Refund API entrypoint (DigitalOcean App Platform).
+
+This module intentionally:
+- Imports the existing FastAPI app from app.api
+- Adds a deterministic connectivity probe endpoint to kaspad
+
+Endpoint:
+  GET /debug/kaspad-connect
+Environment variables (optional):
+  KASPA_RPC_HOST (default: 10.17.0.5)
+  KASPA_RPC_PORT (default: 16110)
+"""
 
 import os
 import socket
-from fastapi import FastAPI
-
-from app.api import router as refund_router
+from app.api import app  # keep existing routes/app wiring intact
 
 
-app = FastAPI(title="Instant Refund Closeout", version="0.1.0")
-
-# -------------------------------------------------------------------
-# Health endpoints
-# -------------------------------------------------------------------
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
-
-
-@app.get("/health/kaspa")
-def kaspa_health():
-    host = "165.227.115.22"
-    port = 16110
+@app.get("/debug/kaspad-connect")
+def debug_kaspad_connect():
+    host = os.getenv("KASPA_RPC_HOST", "10.17.0.5")
+    port = int(os.getenv("KASPA_RPC_PORT", "16110"))
+    timeout = float(os.getenv("KASPA_RPC_TIMEOUT", "3"))
 
     try:
-        with socket.create_connection((host, port), timeout=2):
-            return {
-                "kaspa_node": "reachable",
-                "host": host,
-                "port": port,
-            }
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(timeout)
+        s.connect((host, port))
+        s.close()
+        return {"status": "ok", "message": f"Connected to kaspad at {host}:{port}"}
     except Exception as e:
-        return {
-            "kaspa_node": "unreachable",
-            "error": str(e),
-        }
-
-# -------------------------------------------------------------------
-# API routes
-# -------------------------------------------------------------------
-
-app.include_router(refund_router, prefix="/v1")
+        return {"status": "error", "error": str(e), "target": f"{host}:{port}"}
