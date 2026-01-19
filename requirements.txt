@@ -2,3 +2,4 @@
 uvicorn
 cryptography
 pydantic
+psycopg[binary]
