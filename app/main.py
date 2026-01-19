@@ -1,19 +1,19 @@
-﻿"""
+﻿\"\"\"
 Instant Refund API entrypoint (DigitalOcean App Platform).
 
 This module intentionally:
 - Imports the existing FastAPI app from app.api
-- Adds a deterministic connectivity probe endpoint to kaspad
-
-Endpoint:
-  GET /debug/kaspad-connect
-Environment variables (optional):
-  KASPA_RPC_HOST (default: 10.17.0.5)
-  KASPA_RPC_PORT (default: 16110)
-"""
+- Adds deterministic debug endpoints
+\"\"\"
 
 import os
 import socket
+import time
+import base64
+import hmac
+import hashlib
+import httpx
+
 from app.api import app  # keep existing routes/app wiring intact
 
 
@@ -31,3 +31,35 @@ def debug_kaspad_connect():
         return {"status": "ok", "message": f"Connected to kaspad at {host}:{port}"}
     except Exception as e:
         return {"status": "error", "error": str(e), "target": f"{host}:{port}"}
+
+
+@app.get("/__debug/signer-test")
+async def debug_signer_test():
+    secret_b64 = os.getenv("SIGNER_SHARED_SECRET")
+    if not secret_b64:
+        return {"error": "SIGNER_SHARED_SECRET not set"}
+
+    shared_secret = base64.b64decode(secret_b64)
+
+    payload = "hello-signer"
+    timestamp = int(time.time())
+
+    msg = f"{payload}:{timestamp}".encode()
+    sig = hmac.new(shared_secret, msg, hashlib.sha256).digest()
+    sig_b64 = base64.b64encode(sig).decode()
+
+    body = {
+        "payload": payload,
+        "timestamp": timestamp,
+        "signature": sig_b64
+    }
+
+    signer_url = "https://instant-refund-api-l99qr.ondigitalocean.app/signer/sign"
+
+    async with httpx.AsyncClient(timeout=10) as client:
+        resp = await client.post(signer_url, json=body)
+
+    if resp.status_code != 200:
+        return {"error": resp.text}
+
+    return resp.json()
