@@ -1,10 +1,8 @@
-"""
+﻿\"\"\"
 Instant Refund API entrypoint (DigitalOcean App Platform).
 
-This module intentionally:
-- Imports the existing FastAPI app from app.api
-- Adds deterministic debug endpoints
-"""
+This module is the authoritative router wiring point.
+\"\"\"
 
 import os
 import socket
@@ -14,8 +12,17 @@ import hmac
 import hashlib
 import httpx
 
-from app.api import app  # keep existing routes/app wiring intact
+from fastapi import FastAPI
 
+from app.api import app
+from app.routes.refunds import router as refunds_router
+
+
+# ---- Core router wiring (DETERMINISTIC) ----
+app.include_router(refunds_router)
+
+
+# ---- Debug endpoints ----
 
 @app.get("/debug/kaspad-connect")
 def debug_kaspad_connect():
