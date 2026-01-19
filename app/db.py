@@ -1,62 +1,92 @@
-﻿import os
-import time
-import psycopg
-from psycopg.rows import dict_row
+﻿from __future__ import annotations
 
-def get_database_url() -> str:
+import os
+from urllib.parse import urlparse
+from typing import Optional
+
+import psycopg2
+import psycopg2.extras
+
+
+def _database_url() -> str:
     url = os.getenv("DATABASE_URL")
     if not url:
-        raise RuntimeError("DATABASE_URL is not set")
+        raise RuntimeError("DATABASE_URL is not set (required for Postgres persistence).")
     return url
 
-def connect():
-    return psycopg.connect(get_database_url(), row_factory=dict_row)
 
-def init_schema_if_possible():
+def get_conn():
     """
-    Attempt to initialize schema.
-    Safe to call multiple times.
-    Does NOT crash the process if DB is unavailable.
+    Returns a new psycopg2 connection. Callers should use context managers and close quickly.
     """
-    try:
-        ddl = """
+    url = _database_url()
+    # psycopg2 accepts DATABASE_URL directly (postgres:// or postgresql://)
+    return psycopg2.connect(url)
+
+
+def init_db() -> None:
+    """
+    Idempotent schema init. Safe to call on startup.
+    """
+    ddl = [
+        # Core refunds ledger. One row = one refund attempt.
+        # Idempotency: unique per (merchant_id, idempotency_key) when key is provided.
+        \"\"\"
         CREATE TABLE IF NOT EXISTS refunds (
-            refund_id TEXT PRIMARY KEY,
-            created_at TIMESTAMPTZ NOT NULL,
-            original_transaction_id TEXT NOT NULL,
-            amount NUMERIC NOT NULL,
-            currency TEXT NOT NULL,
-            status TEXT NOT NULL,
-            settlement_state TEXT NOT NULL,
-            txid TEXT NULL,
-            last_error TEXT NULL
+          refund_id TEXT PRIMARY KEY,
+          merchant_id TEXT NOT NULL,
+          order_id TEXT NOT NULL,
+          customer_id TEXT NOT NULL,
+          amount TEXT NOT NULL,
+          reason TEXT NULL,
+          idempotency_key TEXT NULL,
+          status TEXT NOT NULL,
+          settlement_reference TEXT NULL,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
-
-        CREATE TABLE IF NOT EXISTS settlement_jobs (
-            job_id BIGSERIAL PRIMARY KEY,
-            refund_id TEXT NOT NULL REFERENCES refunds(refund_id) ON DELETE CASCADE,
-            state TEXT NOT NULL,
-            attempts INT NOT NULL DEFAULT 0,
-            next_run_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-            locked_at TIMESTAMPTZ NULL,
-            last_error TEXT NULL,
-            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-            updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        \"\"\",
+        # Supports querying pending refunds quickly for settlement engine.
+        \"\"\"
+        CREATE INDEX IF NOT EXISTS idx_refunds_status_created_at
+          ON refunds (status, created_at);
+        \"\"\",
+        # Enforce idempotency only when idempotency_key is present.
+        \"\"\"
+        DO 
+        BEGIN
+          IF NOT EXISTS (
+            SELECT 1
+            FROM pg_indexes
+            WHERE schemaname = 'public' AND indexname = 'ux_refunds_merchant_idem_notnull'
+          ) THEN
+            CREATE UNIQUE INDEX ux_refunds_merchant_idem_notnull
+              ON refunds (merchant_id, idempotency_key)
+              WHERE idempotency_key IS NOT NULL;
+          END IF;
+        END ;
+        \"\"\",
+        # Audit trail for settlement attempts (Task #3 will populate real txids + statuses).
+        \"\"\"
+        CREATE TABLE IF NOT EXISTS settlement_events (
+          event_id BIGSERIAL PRIMARY KEY,
+          refund_id TEXT NOT NULL REFERENCES refunds(refund_id) ON DELETE CASCADE,
+          event_type TEXT NOT NULL,
+          detail JSONB NULL,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
+        \"\"\",
+        \"\"\"
+        CREATE INDEX IF NOT EXISTS idx_settlement_events_refund_id_created_at
+          ON settlement_events (refund_id, created_at);
+        \"\"\",
+    ]
 
-        CREATE INDEX IF NOT EXISTS idx_settlement_jobs_run
-          ON settlement_jobs (state, next_run_at);
-
-        CREATE INDEX IF NOT EXISTS idx_settlement_jobs_refund
-          ON settlement_jobs (refund_id);
-        """
-        with connect() as conn:
-            with conn.cursor() as cur:
-                cur.execute(ddl)
-            conn.commit()
-    except Exception:
-        # Swallow errors here; API/worker will handle DB availability later
-        pass
-
-def utc_now_iso() -> str:
-    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    conn = get_conn()
+    try:
+        conn.autocommit = True
+        with conn.cursor() as cur:
+            for stmt in ddl:
+                cur.execute(stmt)
+    finally:
+        conn.close()
