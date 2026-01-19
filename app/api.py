@@ -1,21 +1,20 @@
-﻿from fastapi import FastAPI
+﻿from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from typing import Optional, Literal
 import socket
 import uuid
-from datetime import datetime, timezone
 import os
 
-from app.db import init_schema, connect, utc_now_iso
+from app.db import connect, init_schema_if_possible, utc_now_iso
 
 app = FastAPI(
     title="Instant Refund API",
     version="0.1.0"
 )
 
-# Ensure schema exists on API boot (safe + quick)
-init_schema()
+# Attempt schema init on boot, but never crash
+init_schema_if_possible()
 
 # ------------------------------------------------------
 # Models
@@ -52,7 +51,7 @@ def root():
     }
 
 # ------------------------------------------------------
-# Health
+# Health (never depends on DB)
 # ------------------------------------------------------
 @app.get("/health")
 def health():
@@ -78,45 +77,52 @@ def debug_kaspad_connect():
         })
 
 # ------------------------------------------------------
-# Instant Refund — enqueue settlement job (worker does broadcast)
+# Instant Refund — enqueue settlement job
 # ------------------------------------------------------
 @app.post("/refund/instant", response_model=InstantRefundResponse)
 def refund_instant(req: InstantRefundRequest):
-    refund_id = "irf_" + uuid.uuid4().hex[:12]
-    created_at = utc_now_iso()
+    try:
+        # Ensure schema exists when DB is actually used
+        init_schema_if_possible()
 
-    currency = req.currency.upper()
+        refund_id = "irf_" + uuid.uuid4().hex[:12]
+        created_at = utc_now_iso()
+        currency = req.currency.upper()
 
-    with connect() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                INSERT INTO refunds (refund_id, created_at, original_transaction_id, amount, currency, status, settlement_state)
-                VALUES (%s, NOW(), %s, %s, %s, %s, %s);
-                """,
-                (refund_id, req.original_transaction_id, req.amount, currency, "initiated", "queued")
-            )
-            cur.execute(
-                """
-                INSERT INTO settlement_jobs (refund_id, state)
-                VALUES (%s, 'queued');
-                """,
-                (refund_id,)
-            )
-        conn.commit()
+        with connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT INTO refunds (refund_id, created_at, original_transaction_id, amount, currency, status, settlement_state)
+                    VALUES (%s, NOW(), %s, %s, %s, %s, %s);
+                    """,
+                    (refund_id, req.original_transaction_id, req.amount, currency, "initiated", "queued")
+                )
+                cur.execute(
+                    """
+                    INSERT INTO settlement_jobs (refund_id, state)
+                    VALUES (%s, 'queued');
+                    """,
+                    (refund_id,)
+                )
+            conn.commit()
 
-    return {
-        "refund_id": refund_id,
-        "status": "initiated",
-        "refund_type": "instant",
-        "created_at": created_at,
-        "original_transaction_id": req.original_transaction_id,
-        "amount": float(req.amount),
-        "currency": currency,
-        "settlement": {
-            "rail": "kaspa",
-            "state": "queued",
-            "note": "worker will sign+broadcast via kaspad"
-        },
-        "merchant_message": "Refund issued instantly. Settlement in progress."
-    }
+        return {
+            "refund_id": refund_id,
+            "status": "initiated",
+            "refund_type": "instant",
+            "created_at": created_at,
+            "original_transaction_id": req.original_transaction_id,
+            "amount": float(req.amount),
+            "currency": currency,
+            "settlement": {
+                "rail": "kaspa",
+                "state": "queued",
+                "note": "worker will sign+broadcast via kaspad"
+            },
+            "merchant_message": "Refund issued instantly. Settlement in progress."
+        }
+
+    except RuntimeError as e:
+        # DATABASE_URL missing or DB unavailable
+        raise HTTPException(status_code=503, detail=str(e))
