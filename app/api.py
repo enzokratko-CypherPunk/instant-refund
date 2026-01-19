@@ -5,11 +5,17 @@ from typing import Optional, Literal
 import socket
 import uuid
 from datetime import datetime, timezone
+import os
+
+from app.db import init_schema, connect, utc_now_iso
 
 app = FastAPI(
     title="Instant Refund API",
     version="0.1.0"
 )
+
+# Ensure schema exists on API boot (safe + quick)
+init_schema()
 
 # ------------------------------------------------------
 # Models
@@ -34,7 +40,7 @@ class InstantRefundResponse(BaseModel):
     merchant_message: str
 
 # ------------------------------------------------------
-# Root — human / partner friendly
+# Root
 # ------------------------------------------------------
 @app.get("/")
 def root():
@@ -46,7 +52,7 @@ def root():
     }
 
 # ------------------------------------------------------
-# Health — readiness / liveness probe
+# Health
 # ------------------------------------------------------
 @app.get("/health")
 def health():
@@ -57,51 +63,60 @@ def health():
 # ------------------------------------------------------
 @app.get("/debug/kaspad-connect")
 def debug_kaspad_connect():
-    kaspad_host = "127.0.0.1"
-    kaspad_port = 16110  # typical kaspad RPC port
+    kaspad_host = os.getenv("KASPAD_HOST", "kaspa-sidecar")
+    kaspad_port = int(os.getenv("KASPAD_PORT", "16110"))
 
     try:
         with socket.create_connection((kaspad_host, kaspad_port), timeout=2):
-            return {
-                "kaspad_reachable": True,
-                "host": kaspad_host,
-                "port": kaspad_port
-            }
+            return {"kaspad_reachable": True, "host": kaspad_host, "port": kaspad_port}
     except Exception as e:
-        return JSONResponse(
-            status_code=200,
-            content={
-                "kaspad_reachable": False,
-                "host": kaspad_host,
-                "port": kaspad_port,
-                "error": str(e)
-            }
-        )
+        return JSONResponse(status_code=200, content={
+            "kaspad_reachable": False,
+            "host": kaspad_host,
+            "port": kaspad_port,
+            "error": str(e)
+        })
 
 # ------------------------------------------------------
-# Instant Refund — partner demo safe stub
+# Instant Refund — enqueue settlement job (worker does broadcast)
 # ------------------------------------------------------
 @app.post("/refund/instant", response_model=InstantRefundResponse)
 def refund_instant(req: InstantRefundRequest):
     refund_id = "irf_" + uuid.uuid4().hex[:12]
-    created_at = datetime.now(timezone.utc).isoformat()
+    created_at = utc_now_iso()
 
-    # Demo-safe: we acknowledge instantly and mark settlement as pending.
-    # No external calls. No database. No side effects.
-    resp = {
+    currency = req.currency.upper()
+
+    with connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO refunds (refund_id, created_at, original_transaction_id, amount, currency, status, settlement_state)
+                VALUES (%s, NOW(), %s, %s, %s, %s, %s);
+                """,
+                (refund_id, req.original_transaction_id, req.amount, currency, "initiated", "queued")
+            )
+            cur.execute(
+                """
+                INSERT INTO settlement_jobs (refund_id, state)
+                VALUES (%s, 'queued');
+                """,
+                (refund_id,)
+            )
+        conn.commit()
+
+    return {
         "refund_id": refund_id,
         "status": "initiated",
         "refund_type": "instant",
         "created_at": created_at,
         "original_transaction_id": req.original_transaction_id,
         "amount": float(req.amount),
-        "currency": req.currency.upper(),
+        "currency": currency,
         "settlement": {
             "rail": "kaspa",
-            "state": "pending",
-            "note": "stubbed - settlement execution not yet wired"
+            "state": "queued",
+            "note": "worker will sign+broadcast via kaspad"
         },
         "merchant_message": "Refund issued instantly. Settlement in progress."
     }
-
-    return resp
