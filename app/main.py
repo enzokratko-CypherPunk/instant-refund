@@ -1,8 +1,8 @@
-﻿\"\"\"
+"""
 Instant Refund API entrypoint (DigitalOcean App Platform).
 
 This module is the authoritative router wiring point.
-\"\"\"
+"""
 
 import os
 import socket
@@ -11,8 +11,6 @@ import base64
 import hmac
 import hashlib
 import httpx
-
-from fastapi import FastAPI
 
 from app.api import app
 from app.routes.refunds import router as refunds_router
