@@ -1,4 +1,4 @@
 ﻿fastapi
 uvicorn
-psycopg[binary]
-requests
+cryptography
+pydantic
