@@ -1,10 +1,10 @@
-﻿\"\"\"
+"""
 Instant Refund API entrypoint (DigitalOcean App Platform).
 
 This module intentionally:
 - Imports the existing FastAPI app from app.api
 - Adds deterministic debug endpoints
-\"\"\"
+"""
 
 import os
 import socket
