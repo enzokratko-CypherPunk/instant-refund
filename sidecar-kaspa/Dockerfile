@@ -1,5 +1,5 @@
 ﻿# ---------- build stage ----------
-FROM rust:1.81 as builder
+FROM rustlang/rust:nightly as builder
 
 WORKDIR /app
 
@@ -25,6 +25,7 @@ ENV SIDECAR_HTTP_PORT=8080
 EXPOSE 8080
 
 CMD ["/app/sidecar-kaspa"]
+
 
 
 
