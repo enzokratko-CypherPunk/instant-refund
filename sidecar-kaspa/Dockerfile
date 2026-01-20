@@ -1,8 +1,8 @@
 ﻿# ---------- build stage ----------
 FROM rustlang/rust:nightly as builder
 
-RUN apt-get update 
- && apt-get install -y protobuf-compiler 
+RUN apt-get update \
+ && apt-get install -y protobuf-compiler \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -15,8 +15,8 @@ RUN cargo build --release
 # ---------- runtime stage ----------
 FROM debian:bookworm-slim
 
-RUN apt-get update 
- && apt-get install -y ca-certificates 
+RUN apt-get update \
+ && apt-get install -y ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
