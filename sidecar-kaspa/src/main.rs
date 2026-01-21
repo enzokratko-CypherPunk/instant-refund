@@ -1,26 +1,41 @@
-﻿mod kaspa;
-mod state;
-mod http;
+﻿use axum::{
+    routing::get,
+    Router,
+    response::IntoResponse,
+    Json,
+};
+use std::net::SocketAddr;
+use serde_json::json;
 
-use state::RuntimeState;
-use tracing::info;
+async fn healthz() -> impl IntoResponse {
+    Json(json!({ "status": "ok" }))
+}
+
+async fn debug_wallet() -> impl IntoResponse {
+    Json(json!({
+        "network": "mainnet",
+        "address": "UNRESOLVED",
+        "utxos": [],
+        "balance": 0
+    }))
+}
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    tracing_subscriber::fmt::init();
+async fn main() {
+    let app = Router::new()
+        .route("/healthz", get(healthz))
+        .route("/debug/wallet", get(debug_wallet));
 
-    let state = RuntimeState::new();
+    let port = std::env::var("SIDECAR_HTTP_PORT")
+        .unwrap_or_else(|_| "8080".to_string())
+        .parse::<u16>()
+        .expect("invalid port");
 
-    // CHANGE THIS TO YOUR DIGITALOCEAN IP WHEN READY
-    let kaspad_endpoint = "http://127.0.0.1:16110".to_string();
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
+    println!("Sidecar listening on {}", addr);
 
-    tokio::spawn(kaspa::grpc_client::connect_with_retry(kaspad_endpoint));
-    tokio::spawn(kaspa::settlement_clock::run(state));
-    tokio::spawn(http::serve());
-
-    info!("sidecar started");
-
-    loop {
-        tokio::time::sleep(std::time::Duration::from_secs(3600)).await;
-    }
+    axum::Server::bind(&addr)
+        .serve(app.into_make_service())
+        .await
+        .unwrap();
 }
