@@ -5,6 +5,7 @@
 };
 use serde::Serialize;
 use std::net::SocketAddr;
+use tokio::net::TcpListener;
 
 #[derive(Serialize)]
 struct HealthResponse {
@@ -25,8 +26,6 @@ async fn healthz() -> Json<HealthResponse> {
 }
 
 async fn debug_wallet() -> Json<WalletDebugResponse> {
-    // Intentionally stubbed.
-    // We will bind real Kaspa identity in Layer 3.2.
     Json(WalletDebugResponse {
         network: "mainnet",
         address: "UNRESOLVED",
@@ -51,9 +50,11 @@ async fn main() {
         .unwrap_or(8080);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
-
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
+    let listener = TcpListener::bind(addr)
         .await
-        .expect("sidecar server failed");
+        .expect("failed to bind TCP listener");
+
+    axum::serve(listener, app)
+        .await
+        .expect("sidecar server crashed");
 }
