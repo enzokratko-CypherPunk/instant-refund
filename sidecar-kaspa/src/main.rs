@@ -16,20 +16,27 @@ fn require_mainnet() -> Result<(), String> {
     Ok(())
 }
 
-// Deterministic wallet identity from the private key.
-// This is NOT a second wallet, not a new address, and not spending.
-// It is simply proof the sidecar is bound to a real key.
+// Parse 32-byte hex WITHOUT external crates
+fn decode_hex_32(s: &str) -> Result<[u8; 32], String> {
+    let s = s.trim().trim_start_matches("0x");
+    if s.len() != 64 {
+        return Err(format!("private key must be 64 hex chars (got {})", s.len()));
+    }
+
+    let mut out = [0u8; 32];
+    for i in 0..32 {
+        let byte_str = &s[i*2..i*2+2];
+        out[i] = u8::from_str_radix(byte_str, 16)
+            .map_err(|_| format!("invalid hex at byte {}", i))?;
+    }
+    Ok(out)
+}
+
 fn derive_wallet_id() -> Result<String, String> {
     let pk_hex = std::env::var("KASPA_SIGNER_PRIVATE_KEY")
         .map_err(|_| "missing env var KASPA_SIGNER_PRIVATE_KEY".to_string())?;
 
-    let pk_hex = pk_hex.trim().trim_start_matches("0x");
-    let bytes = hex::decode(pk_hex)
-        .map_err(|_| "KASPA_SIGNER_PRIVATE_KEY must be hex".to_string())?;
-
-    if bytes.len() != 32 {
-        return Err(format!("private key must be 32 bytes (got {})", bytes.len()));
-    }
+    let bytes = decode_hex_32(&pk_hex)?;
 
     let sk = SecretKey::from_slice(&bytes)
         .map_err(|_| "invalid secp256k1 private key".to_string())?;
@@ -37,7 +44,8 @@ fn derive_wallet_id() -> Result<String, String> {
     let secp = Secp256k1::new();
     let pk = PublicKey::from_secret_key(&secp, &sk);
 
-    Ok(hex::encode(pk.serialize()))
+    // Stable, dependency-free identifier
+    Ok(format!("{:?}", pk.serialize()))
 }
 
 async fn healthz() -> impl IntoResponse {
@@ -63,7 +71,7 @@ async fn debug_wallet() -> impl IntoResponse {
             "wallet_id": wallet_id,
             "balance": 0,
             "utxos": [],
-            "note": "Layer 3.1 stabilized. Next: derive real Kaspa address from key + UTXO discovery via kaspad gRPC."
+            "note": "Layer 3.1 stable. Next: derive Kaspa address + UTXO discovery."
         })),
         Err(e) => Json(json!({
             "network": "mainnet",
