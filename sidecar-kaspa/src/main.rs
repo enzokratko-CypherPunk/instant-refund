@@ -4,8 +4,8 @@
     response::IntoResponse,
     Json,
 };
-use std::net::SocketAddr;
 use serde_json::json;
+use tokio::net::TcpListener;
 
 async fn healthz() -> impl IntoResponse {
     Json(json!({ "status": "ok" }))
@@ -27,15 +27,16 @@ async fn main() {
         .route("/debug/wallet", get(debug_wallet));
 
     let port = std::env::var("SIDECAR_HTTP_PORT")
-        .unwrap_or_else(|_| "8080".to_string())
-        .parse::<u16>()
-        .expect("invalid port");
+        .unwrap_or_else(|_| "8080".to_string());
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], port));
+    let addr = format!("0.0.0.0:{}", port);
+    let listener = TcpListener::bind(&addr)
+        .await
+        .expect("failed to bind listener");
+
     println!("Sidecar listening on {}", addr);
 
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
+    axum::serve(listener, app)
         .await
-        .unwrap();
+        .expect("server error");
 }
