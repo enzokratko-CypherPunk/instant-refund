@@ -11,12 +11,26 @@ use std::net::SocketAddr;
 
 use crate::state::RuntimeState;
 
+// DEBUG HANDLERS
+use crate::api::submit_signed::submit_signed;
+use crate::api::kaspad_connect::kaspad_connect;
+
 pub async fn serve_http(state: RuntimeState) -> Result<(), Box<dyn std::error::Error>> {
-    let app = Router::new()
+    // --- Core API router ---
+    let api_router = Router::new()
         .route("/healthz", get(healthz))
         .route("/metrics-lite", get(metrics_lite))
-        // Task #3: broadcast endpoint (FastAPI -> Axum HTTP)
-        .route("/v1/kaspa/broadcast", post(kaspa_broadcast))
+        .route("/v1/kaspa/broadcast", post(kaspa_broadcast));
+
+    // --- Debug router (explicitly mounted) ---
+    let debug_router = Router::new()
+        .route("/kaspad-connect", get(kaspad_connect))
+        .route("/submit-signed", post(submit_signed));
+
+    // --- Final app router ---
+    let app = Router::new()
+        .nest("/", api_router)
+        .nest("/debug", debug_router)
         .with_state(state);
 
     let host = std::env::var("SIDECAR_HTTP_HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
@@ -74,7 +88,7 @@ struct KaspaBroadcastRequest {
     refund_id: String,
     to_address: String,
     amount_sompi: u64,
-    network: String, // "testnet" for Task #3
+    network: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -82,15 +96,15 @@ struct KaspaBroadcastResponse {
     txid: String,
 }
 
-async fn kaspa_broadcast(State(state): State<RuntimeState>, Json(req): Json<KaspaBroadcastRequest>) -> impl IntoResponse {
-    // Guardrail: Task #3 is testnet-only at this stage.
+async fn kaspa_broadcast(
+    State(state): State<RuntimeState>,
+    Json(req): Json<KaspaBroadcastRequest>,
+) -> impl IntoResponse {
     if req.network.to_lowercase() != "testnet" {
         let body = json!({"error": "network_not_allowed", "note": "Task #3 is testnet-only"});
         return (StatusCode::BAD_REQUEST, Json(body));
     }
 
-    // Delegate to runtime/engine (no business logic here).
-    // You must implement this call in RuntimeState (or expose an engine function it can call).
     match broadcast_via_runtime_state(&state, &req.refund_id, &req.to_address, req.amount_sompi).await {
         Ok(txid) => (StatusCode::OK, Json(json!(KaspaBroadcastResponse { txid }))),
         Err(e) => {
@@ -100,16 +114,12 @@ async fn kaspa_broadcast(State(state): State<RuntimeState>, Json(req): Json<Kasp
     }
 }
 
-// NOTE:
-// This is intentionally a thin wrapper to avoid guessing your kaspa-grpc-core wiring.
-// Implement it by calling your existing engine/grpc client to build+sign+broadcast and return txid.
 async fn broadcast_via_runtime_state(
     state: &RuntimeState,
     refund_id: &str,
     to_address: &str,
     amount_sompi: u64,
 ) -> Result<String, String> {
-    // Placeholder: fail clearly until wired.
     let _ = (state, refund_id, to_address, amount_sompi);
-    Err("broadcast not wired: implement broadcast_via_runtime_state() to call your kaspad gRPC submit/broadcast flow".to_string())
+    Err("broadcast not wired".to_string())
 }
