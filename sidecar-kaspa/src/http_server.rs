@@ -10,24 +10,18 @@ use serde_json::json;
 use std::net::SocketAddr;
 
 use crate::state::RuntimeState;
-
-// DEBUG HANDLERS
 use crate::api::submit_signed::submit_signed;
-use crate::api::kaspad_connect::kaspad_connect;
 
 pub async fn serve_http(state: RuntimeState) -> Result<(), Box<dyn std::error::Error>> {
-    // --- Core API router ---
     let api_router = Router::new()
         .route("/healthz", get(healthz))
         .route("/metrics-lite", get(metrics_lite))
         .route("/v1/kaspa/broadcast", post(kaspa_broadcast));
 
-    // --- Debug router (explicitly mounted) ---
     let debug_router = Router::new()
         .route("/kaspad-connect", get(kaspad_connect))
         .route("/submit-signed", post(submit_signed));
 
-    // --- Final app router ---
     let app = Router::new()
         .nest("/", api_router)
         .nest("/debug", debug_router)
@@ -42,6 +36,23 @@ pub async fn serve_http(state: RuntimeState) -> Result<(), Box<dyn std::error::E
     let listener = tokio::net::TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;
     Ok(())
+}
+
+async fn kaspad_connect(State(state): State<RuntimeState>) -> impl IntoResponse {
+    let connected = state.is_connected();
+
+    let body = json!({
+        "status": if connected { "ok" } else { "not_connected" },
+        "connected": connected,
+        "endpoint": std::env::var("KASPAD_GRPC_ENDPOINT")
+            .unwrap_or_else(|_| "(env not set)".to_string())
+    });
+
+    if connected {
+        (StatusCode::OK, Json(body))
+    } else {
+        (StatusCode::SERVICE_UNAVAILABLE, Json(body))
+    }
 }
 
 async fn healthz(State(state): State<RuntimeState>) -> impl IntoResponse {
@@ -59,7 +70,6 @@ async fn healthz(State(state): State<RuntimeState>) -> impl IntoResponse {
         "virtual_daa_score": daa,
         "last_daa_update_ts": daa_ts,
         "last_error_ts": err_ts,
-        "endpoint": std::env::var("KASPAD_GRPC_ENDPOINT").unwrap_or_else(|_| "(env not set)".to_string()),
     });
 
     if ready {
@@ -101,25 +111,13 @@ async fn kaspa_broadcast(
     Json(req): Json<KaspaBroadcastRequest>,
 ) -> impl IntoResponse {
     if req.network.to_lowercase() != "testnet" {
-        let body = json!({"error": "network_not_allowed", "note": "Task #3 is testnet-only"});
+        let body = json!({"error": "network_not_allowed"});
         return (StatusCode::BAD_REQUEST, Json(body));
     }
 
-    match broadcast_via_runtime_state(&state, &req.refund_id, &req.to_address, req.amount_sompi).await {
-        Ok(txid) => (StatusCode::OK, Json(json!(KaspaBroadcastResponse { txid }))),
-        Err(e) => {
-            let body = json!({"error": "broadcast_failed", "reason": e});
-            (StatusCode::BAD_GATEWAY, Json(body))
-        }
-    }
-}
+    let _ = state;
+    let _ = req;
 
-async fn broadcast_via_runtime_state(
-    state: &RuntimeState,
-    refund_id: &str,
-    to_address: &str,
-    amount_sompi: u64,
-) -> Result<String, String> {
-    let _ = (state, refund_id, to_address, amount_sompi);
-    Err("broadcast not wired".to_string())
+    let body = json!({"error": "broadcast_not_wired"});
+    (StatusCode::BAD_GATEWAY, Json(body))
 }
