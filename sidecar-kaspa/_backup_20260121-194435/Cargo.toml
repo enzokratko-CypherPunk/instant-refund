@@ -4,8 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-faster-hex = "0.9"
-kaspa-txscript = "0.15.0"
 # Web
 axum = "0.7"
 tokio = { version = "1", features = ["full"] }
@@ -21,4 +19,3 @@ ripemd = "0.1"
 # Kaspa primitives (explicit)
 kaspa-addresses = { git = "https://github.com/kaspanet/rusty-kaspa.git" }
 kaspa-consensus-core = { git = "https://github.com/kaspanet/rusty-kaspa.git" }
-
