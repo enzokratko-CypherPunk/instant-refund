@@ -11,7 +11,7 @@ async def signer_test():
     payload = "hello-signer"
     body = {"payload": payload}
 
-    signer_url = "http://instant-refund-signer:8080/signer/sign"
+    signer_url = "http://instant-refund-signer:8080/sign"
 
     async with httpx.AsyncClient(timeout=10) as client:
         resp = await client.post(signer_url, json=body)
@@ -20,4 +20,6 @@ async def signer_test():
         raise HTTPException(status_code=500, detail=resp.text)
 
     return resp.json()
+
+
 
