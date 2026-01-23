@@ -1,4 +1,4 @@
-"""
+﻿"""
 Instant Refund API entrypoint (DigitalOcean App Platform).
 
 This module is the authoritative router wiring point.
