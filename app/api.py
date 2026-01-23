@@ -8,11 +8,7 @@ import httpx
 
 app = FastAPI(title="Instant Refund API")
 
-SIGNER_SHARED_SECRET = os.getenv("SIGNER_SHARED_SECRET")
-
-if not SIGNER_SHARED_SECRET:
-    raise RuntimeError("SIGNER_SHARED_SECRET not set")
-
+SIGNER_SHARED_SECRET = "DEBUG_SHARED_SECRET_DO_NOT_KEEP"
 shared_secret = SIGNER_SHARED_SECRET.encode("utf-8")
 
 @app.get("/__debug/signer-test")
@@ -39,4 +35,5 @@ async def signer_test():
         raise HTTPException(status_code=500, detail=resp.text)
 
     return resp.json()
+
 
