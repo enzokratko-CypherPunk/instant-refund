@@ -3,14 +3,13 @@ import httpx
 
 router = APIRouter()
 
-# DEBUG ONLY — remove after validation
 SIGNER_SHARED_SECRET = "DEBUG_SHARED_SECRET_DO_NOT_KEEP"
 
 @router.get("/__debug/signer-test")
 async def signer_test():
     signer_url = "http://instant-refund-signer:8080/signer/sign"
 
-    payload = {
+    body = {
         "message": "hello-signer"
     }
 
@@ -19,15 +18,9 @@ async def signer_test():
     }
 
     async with httpx.AsyncClient(timeout=10) as client:
-        resp = await client.post(
-            signer_url,
-            json=payload,
-            headers=headers
-        )
+        resp = await client.post(signer_url, json=body, headers=headers)
 
     if resp.status_code != 200:
         raise HTTPException(status_code=500, detail=resp.text)
 
     return resp.json()
-
-
