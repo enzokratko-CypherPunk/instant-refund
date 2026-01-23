@@ -26,7 +26,7 @@ async def signer_test():
         "signature": sig_b64
     }
 
-    signer_url = "https://instant-refund-api-l99qr.ondigitalocean.app/signer/sign"
+    signer_url = "https://instant-refund-signer-XXXXX.ondigitalocean.app/sign"
 
     async with httpx.AsyncClient(timeout=10) as client:
         resp = await client.post(signer_url, json=body)
@@ -35,5 +35,6 @@ async def signer_test():
         raise HTTPException(status_code=500, detail=resp.text)
 
     return resp.json()
+
 
 
