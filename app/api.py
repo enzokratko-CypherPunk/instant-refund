@@ -8,7 +8,7 @@ SIGNER_SHARED_SECRET = "DEBUG_SHARED_SECRET_DO_NOT_KEEP"
 
 @router.get("/__debug/signer-test")
 async def signer_test():
-    signer_url = "https://instant-refund-signer-XXXXX.ondigitalocean.app/signer/sign"
+    signer_url = "http://instant-refund-signer:8080/signer/sign"
 
     payload = {
         "message": "hello-signer"
@@ -29,3 +29,5 @@ async def signer_test():
         raise HTTPException(status_code=500, detail=resp.text)
 
     return resp.json()
+
+
