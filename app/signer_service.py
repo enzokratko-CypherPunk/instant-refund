@@ -1,8 +1,7 @@
 ﻿import os
 from fastapi import FastAPI, Header, HTTPException
 
-SIGNER_SHARED_SECRET = os.getenv("SIGNER_SHARED_SECRET")
-
+SIGNER_SHARED_SECRET = "DEBUG_SHARED_SECRET_DO_NOT_KEEP"
 if not SIGNER_SHARED_SECRET:
     raise RuntimeError("Signer shared secret not configured")
 
@@ -34,3 +33,4 @@ def sign_request(
         "status": "accepted",
         "note": "Signing delegated to Kaspa sidecar",
     }
+
