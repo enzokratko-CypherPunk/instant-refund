@@ -1,13 +1,12 @@
-﻿from fastapi import FastAPI, HTTPException
+﻿from fastapi import APIRouter, HTTPException
 import httpx
-import os
 
-app = FastAPI()
+router = APIRouter()
 
-# DEBUG / TEMP — hardcoded to remove all env ambiguity
+# DEBUG ONLY — remove after validation
 SIGNER_SHARED_SECRET = "DEBUG_SHARED_SECRET_DO_NOT_KEEP"
 
-@app.get("/__debug/signer-test")
+@router.get("/__debug/signer-test")
 async def signer_test():
     signer_url = "https://instant-refund-signer-XXXXX.ondigitalocean.app/signer/sign"
 
