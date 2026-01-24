@@ -1,4 +1,4 @@
-﻿import os
+import os
 from fastapi import FastAPI, Header, HTTPException
 
 SIGNER_SHARED_SECRET = "DEBUG_SHARED_SECRET_DO_NOT_KEEP"
@@ -34,3 +34,5 @@ def sign_request(
         "note": "Signing delegated to Kaspa sidecar",
     }
 
+
+print('SIGNER ROUTES LOADED')
