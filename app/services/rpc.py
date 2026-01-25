@@ -1,32 +1,26 @@
 import sys
 import json
-# Try importing requests safely
 try:
     import requests
 except ImportError:
-    print("CRITICAL ERROR: 'requests' library is missing!", file=sys.stderr)
-    raise
+    print("CRITICAL: REQUESTS LIBRARY MISSING", file=sys.stderr)
 
 def submit_transaction(hex_transaction: str):
-    # USE OFFICIAL PUBLIC RELAY
+    # PUBLIC RELAY
     url = "https://api.kaspa.org/transactions"
     payload = {"transactionHex": hex_transaction}
     
-    print(f"--- ATTEMPTING BROADCAST TO {url} ---", file=sys.stderr)
+    print(f"--- [STEP 4] BROADCASTING TO {url} ---", file=sys.stderr)
     
     try:
-        # 10 second timeout to prevent hanging
         response = requests.post(url, json=payload, timeout=10)
-        
-        print(f"RESPONSE CODE: {response.status_code}", file=sys.stderr)
-        print(f"RESPONSE TEXT: {response.text}", file=sys.stderr)
+        print(f"--- [STEP 5] RELAY RESPONSE: {response.status_code} ---", file=sys.stderr)
         
         if response.status_code == 200:
-            tx_id = response.json().get("transactionId")
-            return {"result": tx_id}
+            return {"result": response.json().get("transactionId")}
         else:
+            print(f"RELAY ERROR: {response.text}", file=sys.stderr)
             return {"error": f"Relay Rejected: {response.text}"}
-            
     except Exception as e:
-        print(f"EXCEPTION CAUGHT: {str(e)}", file=sys.stderr)
-        return {"error": f"Connection Failed: {str(e)}"}
+        print(f"RELAY EXCEPTION: {str(e)}", file=sys.stderr)
+        return {"error": str(e)}
