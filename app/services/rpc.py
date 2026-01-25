@@ -3,17 +3,28 @@ import json
 from app.core.config import settings
 
 def submit_transaction(hex_transaction: str):
-    url = f"http://{settings.KASPAD_ADDRESS}:{settings.KASPAD_PORT}/"
+    # SWITCHING TO OFFICIAL PUBLIC RELAY (Stable & Fast)
+    url = "https://api.kaspa.org/transactions"
+    
+    # payload for REST API is different from RPC
     payload = {
-        "jsonrpc": "2.0",
-        "method": "submitTransaction",
-        "params": [{"transaction": {"hex": hex_transaction}, "allowOrphan": False}],
-        "id": "ir-submit-01"
+        "transactionHex": hex_transaction
     }
+    
     try:
-        # Timeout set to 5 seconds to prevent 504 Hangs
-        response = requests.post(url, json=payload, timeout=5)
-        response.raise_for_status()
-        return response.json()
+        print(f"--- Broadcasting to {url} ---")
+        response = requests.post(url, json=payload, timeout=10)
+        
+        # Check if successful
+        if response.status_code == 200:
+            # Success! Return in the format our app expects
+            # api.kaspa.org returns: {"transactionId": "..."}
+            tx_id = response.json().get("transactionId")
+            return {"result": tx_id}
+            
+        else:
+            # Failure
+            return {"error": f"Relay Rejected: {response.text}"}
+            
     except Exception as e:
-        return {"error": f"Node Connection Failed: {str(e)}"}
+        return {"error": f"Connection Failed: {str(e)}"}
