@@ -1,0 +1,26 @@
+﻿from fastapi import APIRouter, HTTPException
+import httpx
+
+router = APIRouter()
+
+SIGNER_SHARED_SECRET = "DEBUG_SHARED_SECRET_DO_NOT_KEEP"
+
+@router.get("/__debug/signer-test")
+async def signer_test():
+    signer_url = "http://instant-refund-signer:8080/signer/sign"
+
+    body = {
+        "message": "hello-signer"
+    }
+
+    headers = {
+        "X-Signer-Secret": SIGNER_SHARED_SECRET
+    }
+
+    async with httpx.AsyncClient(timeout=10) as client:
+        resp = await client.post(signer_url, json=body, headers=headers)
+
+    if resp.status_code != 200:
+        raise HTTPException(status_code=500, detail=resp.text)
+
+    return resp.json()
