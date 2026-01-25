@@ -1,3 +1,4 @@
+from fastapi.staticfiles import StaticFiles
 import sys
 import os
 import base64
@@ -59,3 +60,5 @@ def process_refund(request: RefundRequest):
 @app.get("/")
 def health_check():
     return {"status": "ok"}
+
+app.mount('/dashboard', StaticFiles(directory='static', html=True), name='static')
