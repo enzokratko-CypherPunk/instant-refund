@@ -1,88 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instant Refund | Vault</title>
+    <meta charset="UTF-8"><title>Vault V2 - 06:17:32</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-    </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-6">
-    <div class="max-w-md w-full glass rounded-3xl p-8 shadow-2xl">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-xl font-semibold">Merchant Vault</h1>
-            <div id="statusDot" class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center">
+    <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 w-96 shadow-2xl">
+        <h1 class="text-xl font-bold mb-2">Merchant Vault</h1>
+        <p class="text-[10px] text-slate-500 mb-6 uppercase tracking-widest">Updated at: 06:17:32</p>
+        
+        <div class="bg-black/20 p-4 rounded-xl mb-6 border border-slate-700">
+            <p class="text-[10px] text-slate-400 uppercase">Available Liquidity</p>
+            <div id="vaultBalance" class="text-2xl font-mono text-blue-400 font-bold">Checking...</div>
         </div>
 
-        <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 mb-6 text-center">
-            <p class="text-xs uppercase tracking-widest text-slate-500 mb-1">Available Liquidity</p>
-            <h2 id="vaultBalance" class="text-3xl font-bold text-blue-400 font-mono">Checking...</h2>
-        </div>
-
-        <div class="space-y-4">
-            <div>
-                <label class="text-[10px] font-bold uppercase text-slate-500 ml-1">Refund Amount (KAS)</label>
-                <input id="amount" type="number" value="10" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-            </div>
-            
-            <button onclick="processRefund()" id="btn" class="w-full bg-blue-600 hover:bg-blue-500 font-semibold py-4 rounded-xl transition-all shadow-lg shadow-blue-900/20">
-                Execute Instant Refund
-            </button>
-
-            <div id="result" class="hidden bg-black/40 p-4 rounded-xl border border-green-900/30">
-                <p class="text-green-400 text-xs font-bold mb-2 uppercase">? Transaction Signed</p>
-                <p id="sig" class="text-[10px] font-mono break-all text-slate-400"></p>
-            </div>
-        </div>
+        <button onclick="process()" id="btn" class="w-full bg-blue-600 p-4 rounded-xl font-bold">Execute Refund</button>
+        <div id="status" class="mt-4 text-[10px] font-mono text-slate-500 break-all"></div>
     </div>
 
     <script>
-        const vaultAddr = 'kaspa:qpkfkghmv8cmyc93u3jpvefurse3qrfu7zmkd5em5g2955jjz66uwg0m4a4qc';
-
-        async function checkBalance() {
+        const addr = 'kaspa:qpkfkghmv8cmyc93u3jpvefurse3qrfu7zmkd5em5g2955jjz66uwg0m4a4qc';
+        async function getBal() {
             try {
-                const res = await fetch(`https://api.kaspa.org/addresses/${vaultAddr}/balance`);
-                const data = await res.json();
-                document.getElementById('vaultBalance').innerText = (data.balance / 100000000).toLocaleString() + ' KAS';
-            } catch (e) { console.error('Balance failed'); }
+                const r = await fetch('https://api.kaspa.org/addresses/' + addr + '/balance');
+                const d = await r.json();
+                document.getElementById('vaultBalance').innerText = (d.balance / 100000000).toLocaleString() + ' KAS';
+            } catch(e) { document.getElementById('vaultBalance').innerText = 'Sync Error'; }
         }
-
-        async function processRefund() {
-            const btn = document.getElementById('btn');
-            const amt = document.getElementById('amount').value;
-            btn.innerText = 'Processing...';
-            btn.disabled = true;
-
+        async function process() {
+            const b = document.getElementById('btn');
+            b.innerText = 'Signing...';
             try {
-                const res = await fetch('https://instant-refund-api-l99qr.ondigitalocean.app/v1/refunds/instant', {
+                const r = await fetch('/v1/refunds/instant', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        amount: amt * 100000000,
-                        recipient_address: 'kaspa:qz8zmn0w7pngsqu9dsn86wej4fxyukjqqec3a85ses7e3d84eehvc6udm9rax',
-                        merchant_id: 'VAULT-DASHBOARD'
-                    })
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({amount: 10000000, recipient_address: 'kaspa:qz8zmn0w7pngsqu9dsn86wej4fxyukjqqec3a85ses7e3d84eehvc6udm9rax', merchant_id: 'V2-TEST'})
                 });
-                const data = await res.json();
-                document.getElementById('result').classList.remove('hidden');
-                document.getElementById('sig').innerText = data.signed_hex;
-                btn.innerText = 'Success';
-                btn.classList.replace('bg-blue-600', 'bg-green-600');
-                setTimeout(checkBalance, 2000);
-            } catch (e) {
-                alert('Connection Failed');
-                btn.disabled = false;
-                btn.innerText = 'Execute Instant Refund';
-            }
+                const d = await r.json();
+                document.getElementById('status').innerText = 'Signed: ' + d.signed_hex.substring(0,40) + '...';
+                b.innerText = 'Success';
+                getBal();
+            } catch(e) { b.innerText = 'Error'; }
         }
-
-        checkBalance();
-        setInterval(checkBalance, 30000);
+        getBal();
     </script>
 </body>
 </html>
-
