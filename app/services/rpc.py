@@ -1,26 +1,43 @@
-import sys
 import json
+import sys
+
+# Try to import requests; if missing, we catch it later
 try:
     import requests
 except ImportError:
-    print("CRITICAL: REQUESTS LIBRARY MISSING", file=sys.stderr)
+    requests = None
 
 def submit_transaction(hex_transaction: str):
-    # PUBLIC RELAY
+    """
+    Submits a transaction to the Kaspa Network via the Public Relay.
+    This bypasses the local node entirely.
+    """
+    # 1. Check for library
+    if not requests:
+        print("CRITICAL ERROR: 'requests' library is not installed.", file=sys.stderr)
+        return {"error": "Server Configuration Error: Missing 'requests' library"}
+
+    # 2. Define Public Relay URL
     url = "https://api.kaspa.org/transactions"
     payload = {"transactionHex": hex_transaction}
     
-    print(f"--- [STEP 4] BROADCASTING TO {url} ---", file=sys.stderr)
-    
+    print(f"--- [NEW CODE ACTIVE] BROADCASTING TO {url} ---", file=sys.stderr, flush=True)
+
     try:
+        # 3. Send Request (10s timeout)
         response = requests.post(url, json=payload, timeout=10)
-        print(f"--- [STEP 5] RELAY RESPONSE: {response.status_code} ---", file=sys.stderr)
+        
+        print(f"--- RELAY STATUS: {response.status_code} ---", file=sys.stderr, flush=True)
         
         if response.status_code == 200:
-            return {"result": response.json().get("transactionId")}
+            # Success
+            tx_id = response.json().get("transactionId")
+            return {"result": tx_id}
         else:
-            print(f"RELAY ERROR: {response.text}", file=sys.stderr)
+            # Relay Rejected It
+            print(f"RELAY ERROR BODY: {response.text}", file=sys.stderr, flush=True)
             return {"error": f"Relay Rejected: {response.text}"}
+
     except Exception as e:
-        print(f"RELAY EXCEPTION: {str(e)}", file=sys.stderr)
-        return {"error": str(e)}
+        print(f"CONNECTION EXCEPTION: {str(e)}", file=sys.stderr, flush=True)
+        return {"error": f"Connection Failed: {str(e)}"}
