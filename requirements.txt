@@ -6,3 +6,5 @@ psycopg[binary]
 httpx
 
 psycopg2-binary
+
+requests
