@@ -1,30 +1,32 @@
-import requests
+import sys
 import json
-from app.core.config import settings
+# Try importing requests safely
+try:
+    import requests
+except ImportError:
+    print("CRITICAL ERROR: 'requests' library is missing!", file=sys.stderr)
+    raise
 
 def submit_transaction(hex_transaction: str):
-    # SWITCHING TO OFFICIAL PUBLIC RELAY (Stable & Fast)
+    # USE OFFICIAL PUBLIC RELAY
     url = "https://api.kaspa.org/transactions"
+    payload = {"transactionHex": hex_transaction}
     
-    # payload for REST API is different from RPC
-    payload = {
-        "transactionHex": hex_transaction
-    }
+    print(f"--- ATTEMPTING BROADCAST TO {url} ---", file=sys.stderr)
     
     try:
-        print(f"--- Broadcasting to {url} ---")
+        # 10 second timeout to prevent hanging
         response = requests.post(url, json=payload, timeout=10)
         
-        # Check if successful
+        print(f"RESPONSE CODE: {response.status_code}", file=sys.stderr)
+        print(f"RESPONSE TEXT: {response.text}", file=sys.stderr)
+        
         if response.status_code == 200:
-            # Success! Return in the format our app expects
-            # api.kaspa.org returns: {"transactionId": "..."}
             tx_id = response.json().get("transactionId")
             return {"result": tx_id}
-            
         else:
-            # Failure
             return {"error": f"Relay Rejected: {response.text}"}
             
     except Exception as e:
+        print(f"EXCEPTION CAUGHT: {str(e)}", file=sys.stderr)
         return {"error": f"Connection Failed: {str(e)}"}
