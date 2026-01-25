@@ -63,3 +63,4 @@ def health_check():
 
 app.mount('/dashboard', StaticFiles(directory='static', html=True), name='static')
 
+

@@ -7,3 +7,4 @@ ecdsa
 grpcio
 protobuf
 kaspa-network
+kaspa-network
