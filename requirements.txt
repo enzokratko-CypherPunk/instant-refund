@@ -1,10 +1,4 @@
-﻿fastapi
+fastapi
 uvicorn
-cryptography
 pydantic
-psycopg[binary]
-httpx
-
-psycopg2-binary
-
 requests
