@@ -11,8 +11,9 @@ def submit_transaction(hex_transaction: str):
         "id": "ir-submit-01"
     }
     try:
+        # Timeout set to 5 seconds to prevent Gateway Timeouts
         response = requests.post(url, json=payload, timeout=5)
         response.raise_for_status()
         return response.json()
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": f"Node Connection Failed: {str(e)}"}
