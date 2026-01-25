@@ -1,27 +1,37 @@
 import sys
-import traceback
+import os
+import glob
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-# ROBUST IMPORT STRATEGY
-# We try to import from the current package (neighbors) first.
+app = FastAPI(title="Instant Refund API")
+
+# --- DEBUG: FILE SYSTEM X-RAY ---
+@app.get("/debug/files")
+def list_files():
+    # This lists all files in the current folder so we can see if signer.py is actually there
+    cwd = os.getcwd()
+    files = []
+    for root, dirs, filenames in os.walk(cwd):
+        for f in filenames:
+            files.append(os.path.join(root, f))
+    return {"cwd": cwd, "files": files}
+
+# --- ATTEMPT IMPORT ---
 try:
+    # Try neighbor import
     from . import signer
     from . import rpc
-    print("--- [SYSTEM] NEIGHBOR MODULES LOADED ---", file=sys.stderr)
     IMPORT_ERROR = None
-except ImportError as e:
-    # Fallback: maybe we are running as a script, not a package
+except ImportError:
     try:
+        # Try root import
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         import signer
         import rpc
-        print("--- [SYSTEM] STANDARD MODULES LOADED ---", file=sys.stderr)
         IMPORT_ERROR = None
-    except Exception as e2:
-        IMPORT_ERROR = f"CRITICAL MISSING PARTS: {str(e2)}\n{traceback.format_exc()}"
-        print(IMPORT_ERROR, file=sys.stderr)
-
-app = FastAPI(title="Instant Refund API")
+    except Exception as e:
+        IMPORT_ERROR = str(e)
 
 class RefundRequest(BaseModel):
     amount: int
@@ -30,27 +40,21 @@ class RefundRequest(BaseModel):
 
 @app.post("/v1/refunds/instant")
 def process_refund(request: RefundRequest):
-    print(f"--- [REQUEST] {request.amount} to {request.recipient_address} ---", file=sys.stderr, flush=True)
-
     if IMPORT_ERROR:
+        # If it fails, we tell you WHY and WHAT FILES EXIST
         return {
-            "status": "error", 
-            "message": "Deployment Error: Files Missing", 
-            "details": IMPORT_ERROR
+            "status": "error",
+            "error": "Missing Modules",
+            "details": IMPORT_ERROR,
+            "help": "Go to /debug/files to see what is missing."
         }
-
+    
     try:
-        # THE MONEY SHOT
-        print("--- [STEP 1] SIGNING ---", file=sys.stderr, flush=True)
         hex_tx = signer.sign_transaction(request.amount, request.recipient_address)
-        
-        print("--- [STEP 2] BROADCASTING ---", file=sys.stderr, flush=True)
         result = rpc.submit_transaction(hex_tx)
-        
-        return {"status": "success", "txid": result, "note": "MAINNET SUCCESS"}
-
+        return {"status": "success", "txid": result}
     except Exception as e:
-        return {"status": "error", "message": str(e), "trace": traceback.format_exc()}
+        return {"status": "error", "message": str(e)}
 
 @app.get("/")
 def health_check():
