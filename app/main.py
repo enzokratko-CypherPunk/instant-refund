@@ -49,7 +49,7 @@ def process_refund(request: RefundRequest):
         broadcast_result = rpc.submit_transaction(signed_tx_hex)
 
         return {
-            "status": "success", 
+            "status": result, 
             "signed_hex": signed_tx_hex, 
             "broadcast_note": broadcast_result,
             "message": "REAL CRYPTO SIGNATURE GENERATED"
@@ -62,6 +62,7 @@ def health_check():
     return {"status": "ok"}
 
 app.mount('/dashboard', StaticFiles(directory='static', html=True), name='static')
+
 
 
 
