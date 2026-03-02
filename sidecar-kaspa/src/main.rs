@@ -1,89 +1,88 @@
-﻿use axum::{
-    routing::get,
-    Router,
-    Json,
-};
-use serde::Serialize;
-use serde_json::json;
-use std::net::SocketAddr;
-use tokio::net::{TcpListener, TcpStream};
-use tokio::time::{timeout, Duration};
+use tracing::{error, info};
+use tracing_subscriber::EnvFilter;
 
-#[derive(Serialize)]
-struct HealthResponse {
-    status: &'static str,
-}
+mod settlement_key;
+mod state;
+mod http_server;
 
-#[derive(Serialize)]
-struct WalletDebugResponse {
-    network: &'static str,
-    address: &'static str,
-    wallet_bound: bool,
-    balance: u64,
-    utxos: Vec<String>,
-}
+use state::RuntimeState;
 
-async fn healthz() -> Json<HealthResponse> {
-    Json(HealthResponse { status: "ok" })
-}
+use tokio::time::{sleep, Duration};
+use tokio_postgres::NoTls;
 
-async fn debug_wallet() -> Json<WalletDebugResponse> {
-    Json(WalletDebugResponse {
-        network: "mainnet",
-        address: "UNRESOLVED",
-        wallet_bound: false,
-        balance: 0,
-        utxos: vec![],
-    })
-}
+async fn poll_pending_signed_intents() {
+    let db_url = match std::env::var("DATABASE_URL") {
+        Ok(v) => v,
+        Err(_) => {
+            error!("DATABASE_URL not set; sidecar DB polling disabled");
+            return;
+        }
+    };
 
-async fn debug_kaspad_connect() -> Json<serde_json::Value> {
-    let host = std::env::var("KASPA_WRPC_HOST").unwrap_or_else(|_| "10.17.0.5".to_string());
-    let port: u16 = std::env::var("KASPA_WRPC_PORT")
-        .ok()
-        .and_then(|v| v.parse().ok())
-        .unwrap_or(16110);
+    loop {
+        match tokio_postgres::connect(&db_url, NoTls).await {
+            Ok((client, connection)) => {
+                tokio::spawn(async move {
+                    if let Err(e) = connection.await {
+                        error!("postgres_connection_error: {}", e);
+                    }
+                });
 
-    let addr = format!("{}:{}", host, port);
+                match client
+                    .query(
+                        "SELECT signed_intent_id, refund_id FROM signed_intents WHERE status = 'PENDING' ORDER BY created_at ASC LIMIT 25",
+                        &[],
+                    )
+                    .await
+                {
+                    Ok(rows) => {
+                        info!("pending_signed_intents count={}", rows.len());
+                        for r in rows {
+                            let sid: String = r.get(0);
+                            let rid: String = r.get(1);
+                            info!("pending_intent signed_intent_id={} refund_id={}", sid, rid);
+                        }
+                    }
+                    Err(e) => {
+                        error!("pending_intents_query_failed: {}", e);
+                    }
+                }
+            }
+            Err(e) => {
+                error!("postgres_connect_failed: {}", e);
+            }
+        }
 
-    match timeout(Duration::from_secs(3), TcpStream::connect(addr.clone())).await {
-        Ok(Ok(_)) => Json(json!({
-            "status": "ok",
-            "message": format!("Connected to kaspad wRPC at {}", addr)
-        })),
-        Ok(Err(e)) => Json(json!({
-            "status": "error",
-            "message": format!("Failed to connect to kaspad at {}", addr),
-            "error": e.to_string()
-        })),
-        Err(_) => Json(json!({
-            "status": "error",
-            "message": format!("Timed out connecting to kaspad at {}", addr)
-        })),
+        sleep(Duration::from_secs(10)).await;
     }
 }
 
 #[tokio::main]
 async fn main() {
-    let app = Router::new().nest(
-        "/sidecar",
-        Router::new()
-            .route("/healthz", get(healthz))
-            .route("/debug/wallet", get(debug_wallet))
-            .route("/debug/kaspad-connect", get(debug_kaspad_connect)),
-    );
+    tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::from_default_env())
+        .init();
 
-    let port: u16 = std::env::var("SIDECAR_HTTP_PORT")
-        .ok()
-        .and_then(|v| v.parse().ok())
-        .unwrap_or(8080);
+    let state = RuntimeState::new();
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], port));
-    let listener = TcpListener::bind(addr)
-        .await
-        .expect("failed to bind TCP listener");
+    // --- SIGNER INIT (AUTHORITATIVE) ---
+    match settlement_key::assert_expected_from_address(&()) {
+        Ok(from) => {
+            info!("signer_loaded from_address={}", from);
+            state.set_wallet_ok(from);
+        }
+        Err(e) => {
+            error!("signer_init_failed: {}", e);
+            state.set_wallet_error(e.to_string());
+        }
+    }
 
-    axum::serve(listener, app)
-        .await
-        .expect("sidecar server crashed");
+    // --- BACKGROUND DB POLLER ---
+    tokio::spawn(poll_pending_signed_intents());
+
+    // --- HTTP SERVER ---
+    if let Err(e) = http_server::serve_http(state.clone()).await {
+        error!("http_server_failed: {}", e);
+        std::process::exit(1);
+    }
 }

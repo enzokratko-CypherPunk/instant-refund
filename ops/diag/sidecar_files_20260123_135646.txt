@@ -1,0 +1,366 @@
+
+==================== FILE: src\main.rs ====================
+
+use axum::{routing::get, Json, Router};
+use serde::Serialize;
+use std::net::SocketAddr;
+
+mod settlement_key;
+
+#[derive(Serialize)]
+struct Health { status: &'static str }
+
+#[tokio::main]
+async fn main() {
+    let from = settlement_key::assert_expected_from_address(&()).unwrap();
+    tracing::info!("from_address={}", from);
+
+    let app = Router::new()
+        .route("/sidecar/healthz", get(|| async { Json(Health { status: "ok" }) }));
+
+    axum::serve(
+        tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap(),
+        app
+    ).await.unwrap();
+}
+
+==================== FILE: src\state.rs ====================
+
+#[derive(Clone, Debug)]
+pub struct RuntimeState {
+    pub started_at: std::time::Instant,
+}
+
+impl RuntimeState {
+    pub fn new() -> Self {
+        Self {
+            started_at: std::time::Instant::now(),
+        }
+    }
+}
+
+==================== FILE: src\http_server.rs ====================
+
+use axum::{
+    extract::State,
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{get, post},
+    Json, Router,
+};
+use serde::{Deserialize, Serialize};
+use serde_json::json;
+use std::net::SocketAddr;
+
+use crate::state::RuntimeState;
+use crate::api::submit_signed::submit_signed;
+
+pub async fn serve_http(state: RuntimeState) -> Result<(), Box<dyn std::error::Error>> {
+    let api_router = Router::new()
+        .route("/healthz", get(healthz))
+        .route("/metrics-lite", get(metrics_lite))
+        .route("/v1/kaspa/broadcast", post(kaspa_broadcast));
+
+    let debug_router = Router::new()
+        .route("/kaspad-connect", get(kaspad_connect))
+        .route("/submit-signed", post(submit_signed));
+
+    let app = Router::new()
+        .nest("/", api_router)
+        .nest("/debug", debug_router)
+        .with_state(state);
+
+    let host = std::env::var("SIDECAR_HTTP_HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
+    let port = std::env::var("SIDECAR_HTTP_PORT").unwrap_or_else(|_| "8080".to_string());
+    let addr: SocketAddr = format!("{}:{}", host, port).parse()?;
+
+    println!("[HTTP] listening on http://{}", addr);
+
+    let listener = tokio::net::TcpListener::bind(addr).await?;
+    axum::serve(listener, app).await?;
+    Ok(())
+}
+
+async fn kaspad_connect(State(state): State<RuntimeState>) -> impl IntoResponse {
+    let connected = state.is_connected();
+
+    let body = json!({
+        "status": if connected { "ok" } else { "not_connected" },
+        "connected": connected,
+        "endpoint": std::env::var("KASPAD_GRPC_ENDPOINT")
+            .unwrap_or_else(|_| "(env not set)".to_string())
+    });
+
+    if connected {
+        (StatusCode::OK, Json(body))
+    } else {
+        (StatusCode::SERVICE_UNAVAILABLE, Json(body))
+    }
+}
+
+async fn healthz(State(state): State<RuntimeState>) -> impl IntoResponse {
+    let connected = state.is_connected();
+    let daa = state.daa();
+    let daa_ts = state.daa_updated_ts();
+    let err_ts = state.last_error_ts();
+
+    let ready = connected && daa_ts > 0;
+
+    let body = json!({
+        "status": "ok",
+        "ready": ready,
+        "connected": connected,
+        "virtual_daa_score": daa,
+        "last_daa_update_ts": daa_ts,
+        "last_error_ts": err_ts,
+    });
+
+    if ready {
+        (StatusCode::OK, Json(body))
+    } else {
+        (StatusCode::SERVICE_UNAVAILABLE, Json(body))
+    }
+}
+
+async fn metrics_lite(State(state): State<RuntimeState>) -> impl IntoResponse {
+    let connected = if state.is_connected() { 1 } else { 0 };
+    let daa = state.daa();
+    let daa_ts = state.daa_updated_ts();
+    let err_ts = state.last_error_ts();
+
+    let text = format!(
+        "sidecar_connected {}\nsidecar_virtual_daa_score {}\nsidecar_last_daa_update_ts {}\nsidecar_last_error_ts {}\n",
+        connected, daa, daa_ts, err_ts
+    );
+
+    (StatusCode::OK, text)
+}
+
+#[derive(Debug, Deserialize)]
+struct KaspaBroadcastRequest {
+    refund_id: String,
+    to_address: String,
+    amount_sompi: u64,
+    network: String,
+}
+
+#[derive(Debug, Serialize)]
+struct KaspaBroadcastResponse {
+    txid: String,
+}
+
+async fn kaspa_broadcast(
+    State(state): State<RuntimeState>,
+    Json(req): Json<KaspaBroadcastRequest>,
+) -> impl IntoResponse {
+    if req.network.to_lowercase() != "testnet" {
+        let body = json!({"error": "network_not_allowed"});
+        return (StatusCode::BAD_REQUEST, Json(body));
+    }
+
+    let _ = state;
+    let _ = req;
+
+    let body = json!({"error": "broadcast_not_wired"});
+    (StatusCode::BAD_GATEWAY, Json(body))
+}
+
+==================== FILE: src\http.rs ====================
+
+use axum::{routing::get, Router};
+use tokio::net::TcpListener;
+use tracing::info;
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
+use std::time::Duration;
+use tokio::net::TcpStream;
+use tokio::time::timeout;
+
+async fn healthz() -> &'static str {
+    "ok"
+}
+
+pub async fn serve() {
+    let app = Router::new().route("/healthz", get(healthz));
+
+    let addr = "0.0.0.0:8080";
+    let listener = TcpListener::bind(addr).await.unwrap();
+
+    info!("healthz listening on {}", addr);
+
+    axum::serve(listener, app).await.unwrap();
+}
+
+async fn debug_kaspad_connect() -> impl IntoResponse {
+    // wRPC is websocket over TCP; TCP connect is sufficient to prove VPC reachability.
+    let host = std::env::var("KASPA_WRPC_HOST").unwrap_or_else(|_| "10.17.0.5".to_string());
+    let port: u16 = std::env::var("KASPA_WRPC_PORT")
+        .ok()
+        .and_then(|v| v.parse::<u16>().ok())
+        .unwrap_or(16110);
+
+    let timeout_secs: f64 = std::env::var("KASPA_WRPC_TIMEOUT_SECS")
+        .ok()
+        .and_then(|v| v.parse::<f64>().ok())
+        .unwrap_or(3.0);
+
+    let addr = format!("{}:{}", host, port);
+
+    match timeout(Duration::from_secs_f64(timeout_secs), TcpStream::connect(addr.clone())).await {
+        Ok(Ok(_stream)) => {
+            let body = format!(r#"{{"status":"ok","message":"Connected to kaspad wRPC (TCP) at {}"}}"#, addr);
+            (StatusCode::OK, body)
+        }
+        Ok(Err(e)) => {
+            let body = format!(r#"{{"status":"error","message":"TCP connect failed to {}","error":"{}"}}"#, addr, e);
+            (StatusCode::SERVICE_UNAVAILABLE, body)
+        }
+        Err(_elapsed) => {
+            let body = format!(r#"{{"status":"error","message":"TCP connect timed out to {}","error":"timeout"}}
+"#, addr);
+            (StatusCode::GATEWAY_TIMEOUT, body)
+        }
+    }
+}
+
+
+
+==================== FILE: src\settlement_key.rs ====================
+
+use anyhow::{Result, anyhow};
+
+#[cfg(windows)]
+pub fn assert_expected_from_address(_: &()) -> Result<String> {
+    Ok("windows-dev-stub".to_string())
+}
+
+#[cfg(not(windows))]
+use kaspa_addresses::{Address, Prefix, Version};
+#[cfg(not(windows))]
+use secp256k1::{Secp256k1, SecretKey, Keypair, XOnlyPublicKey};
+#[cfg(not(windows))]
+use std::fs;
+
+#[cfg(not(windows))]
+pub fn assert_expected_from_address(_: &()) -> Result<String> {
+    let privkey_file = std::env::var("KASPA_SETTLEMENT_PRIVKEY_FILE")?;
+    let expected = std::env::var("KASPA_EXPECTED_FROM_ADDRESS")?;
+
+    let raw = fs::read_to_string(privkey_file)?;
+    let bytes = hex::decode(raw.trim())?;
+    let mut sk_bytes = [0u8; 32];
+    sk_bytes.copy_from_slice(&bytes);
+
+    let secp = Secp256k1::new();
+    let sk = SecretKey::from_slice(&sk_bytes)?;
+    let kp = Keypair::from_secret_key(&secp, &sk);
+    let (xonly, _) = XOnlyPublicKey::from_keypair(&kp);
+
+    let addr = Address::new(Prefix::Mainnet, Version::PubKey, &xonly.serialize())
+        .address_to_string();
+
+    if addr != expected {
+        return Err(anyhow!("FROM address mismatch"));
+    }
+
+    Ok(addr)
+}
+
+==================== FILE: src\api\mod.rs ====================
+
+pub fn banner() -> &'static str {
+    "api module placeholder"
+}
+pub mod submit_signed;
+
+
+==================== FILE: src\api\submit_signed.rs ====================
+
+use axum::{extract::State, http::StatusCode, Json};
+use serde::{Deserialize, Serialize};
+
+use crate::state::AppState;
+
+// --- Request/Response payloads ---
+#[derive(Debug, Deserialize)]
+pub struct UtxoIn {
+    pub txid: String,
+    pub index: u32,
+    pub amount_sompi: u64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SubmitSignedReq {
+    pub to_address: String,
+    pub amount_sompi: u64,
+    pub fee_sompi: u64,
+    pub utxos: Vec<UtxoIn>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct SubmitSignedResp {
+    pub status: &'static str,
+    pub txid: Option<String>,
+    pub error: Option<String>,
+}
+
+/// DEBUG ONLY:
+/// Build + sign a tx inside the sidecar using KASPA_SIGNER_PRIVATE_KEY,
+/// then submit via RPC submit_transaction.
+///
+/// This implements Option A: sidecar signing + kaspad submit_transaction.
+///
+/// IMPORTANT:
+/// - This is not used by production refund flow yet.
+/// - This is the “first real txid” proof endpoint.
+pub async fn submit_signed(
+    State(state): State<AppState>,
+    Json(req): Json<SubmitSignedReq>,
+) -> (StatusCode, Json<SubmitSignedResp>) {
+    // 1) Build an unsigned plan (inputs/outputs/change)
+    // 2) Sign each input with schnorr
+    // 3) Submit via RPC
+
+    let result = crate::kaspa::submit_signed_tx(
+        &state,
+        &req.to_address,
+        req.amount_sompi,
+        req.fee_sompi,
+        &req.utxos,
+    ).await;
+
+    match result {
+        Ok(txid) => (
+            StatusCode::OK,
+            Json(SubmitSignedResp { status: "ok", txid: Some(txid), error: None })
+        ),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(SubmitSignedResp { status: "error", txid: None, error: Some(e) })
+        ),
+    }
+}
+
+==================== FILE: src\kaspa\grpc_client.rs ====================
+
+use kaspa_grpc_core::protowire::rpc_client::RpcClient;
+use tracing::{error, info};
+use std::time::Duration;
+
+pub async fn connect_with_retry(endpoint: String) {
+    let mut delay = 1u64;
+
+    loop {
+        match RpcClient::connect(endpoint.clone()).await {
+            Ok(_) => {
+                info!("connected to kaspad at {}", endpoint);
+                return;
+            }
+            Err(e) => {
+                error!("kaspad connection failed: {:?}", e);
+                tokio::time::sleep(Duration::from_secs(delay)).await;
+                delay = (delay * 2).min(60);
+            }
+        }
+    }
+}

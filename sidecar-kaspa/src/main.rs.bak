@@ -1,0 +1,35 @@
+﻿use tracing::{error, info};
+use tracing_subscriber::EnvFilter;
+
+mod settlement_key;
+mod state;
+mod http_server;
+
+use state::RuntimeState;
+
+#[tokio::main]
+async fn main() {
+    tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::from_default_env())
+        .init();
+
+    let state = RuntimeState::new();
+
+    // --- SIGNER INIT (AUTHORITATIVE) ---
+    match settlement_key::assert_expected_from_address(&()) {
+        Ok(from) => {
+            info!("signer_loaded from_address={}", from);
+            state.set_wallet_ok(from);
+        }
+        Err(e) => {
+            error!("signer_init_failed: {}", e);
+            state.set_wallet_error(e.to_string());
+        }
+    }
+
+    // --- HTTP SERVER ---
+    if let Err(e) = http_server::serve_http(state.clone()).await {
+        error!("http_server_failed: {}", e);
+        std::process::exit(1);
+    }
+}

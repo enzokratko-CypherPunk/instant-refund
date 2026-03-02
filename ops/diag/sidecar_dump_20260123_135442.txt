@@ -1,0 +1,67 @@
+
+==================== SIDE-CAR PATHS ====================
+
+RepoRoot: C:\Users\brian\instant-refund\instant-refund
+Sidecar:  C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa
+
+==================== TREE (TOP) ====================
+
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\target
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\_backup_20260121-194435
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\.gitignore
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\.python-version
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\Cargo.lock
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\Cargo.toml
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\Dockerfile
+
+==================== SRC FILE LIST ====================
+
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\api\mod.rs
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\api\submit_signed.rs
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\http.rs
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\http_server.rs
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\kaspa\event_store.rs
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\kaspa\grpc_client.rs
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\kaspa\mod.rs
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\kaspa\settlement_clock.rs
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\kaspa\submit_signed.rs
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\main.rs
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\settlement_key.rs
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\state.rs
+
+==================== GREP: UNRESOLVED ====================
+
+
+==================== GREP: /sidecar/debug/wallet ====================
+
+
+==================== GREP: SIDECAR_PRIVATE_KEY_FILE ====================
+
+
+==================== GREP: RuntimeState / AppState ====================
+
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\kaspa\settlement_clock.rs:1:use crate::state::RuntimeState;
+C:\Users\brian\instant-refund\instant-refund\sidecar-kaspa\src\kaspa\settlement_clock.rs:4:pub async fn run(state: RuntimeState) {
+
+==================== CARGO TOML ====================
+
+[package]
+name = "kaspa-sidecar"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+hex = "0.4"
+secp256k1 = { version = "0.29", features = ["rand-std"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Linux-only dependency (signer host)
+[target.'cfg(not(windows))'.dependencies]
+kaspa-addresses = { version = "0.13.4", default-features = false }

@@ -1,36 +1,67 @@
-from fastapi import APIRouter, HTTPException
-import os
-import httpx
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from uuid import uuid4
+from datetime import datetime
 
-router = APIRouter()
+from app.store import STORE
+from app.db import db_cursor
 
-SIGNER_SHARED_SECRET = os.getenv("SIGNER_SHARED_SECRET")
-SIGNER_URL = os.getenv("SIGNER_URL")
+app = FastAPI()
 
-@router.get("/__debug/signer-test")
-async def signer_test():
-    if not SIGNER_URL:
-        return {
-            "status": "ok",
-            "signer_call": "skipped",
-            "reason": "SIGNER_URL not set"
-        }
+class InstantRefundRequest(BaseModel):
+    merchant_id: str
+    order_id: str
+    customer_id: str
+    amount: str
+    reason: str | None = None
+    idempotency_key: str | None = None
 
-    headers = {}
-    if SIGNER_SHARED_SECRET:
-        headers["X-Signer-Secret"] = SIGNER_SHARED_SECRET
+class InstantRefundResponse(BaseModel):
+    refund_id: str
+    signed_intent_id: str
+    status: str
 
+@app.post("/v1/refunds/instant", response_model=InstantRefundResponse)
+def instant_refund(req: InstantRefundRequest):
     try:
-        async with httpx.AsyncClient(timeout=10) as client:
-            resp = await client.post(
-                SIGNER_URL,
-                json={"message": "hello-signer"},
-                headers=headers
+        # 1) Create or fetch refund (idempotent)
+        refund = STORE.create_refund(
+            merchant_id=req.merchant_id,
+            order_id=req.order_id,
+            customer_id=req.customer_id,
+            amount=req.amount,
+            reason=req.reason,
+            idempotency_key=req.idempotency_key,
+        )
+
+        # 2) Create signed_intent placeholder
+        signed_intent_id = str(uuid4())
+        now = datetime.utcnow()
+
+        with db_cursor() as (conn, cur):
+            cur.execute(
+                """
+                INSERT INTO signed_intents (
+                    signed_intent_id,
+                    refund_id,
+                    status,
+                    created_at
+                )
+                VALUES (%s, %s, %s, %s);
+                """,
+                (
+                    signed_intent_id,
+                    refund.refund_id,
+                    "PENDING",
+                    now,
+                ),
             )
-        return {
-            "status": "ok",
-            "http_status": resp.status_code,
-            "body": resp.text
-        }
+
+        return InstantRefundResponse(
+            refund_id=refund.refund_id,
+            signed_intent_id=signed_intent_id,
+            status="PENDING",
+        )
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
