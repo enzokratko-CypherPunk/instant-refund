@@ -1,5 +1,6 @@
 ﻿
 from app.tools.bin_lookup import get_bin_details
+from app.tools.mcc_lookup import get_mcc_details
 """
 Instant Refund API entrypoint (DigitalOcean App Platform).
 
@@ -74,3 +75,8 @@ async def debug_signer_test():
 @app.get("/v1/tools/bin/{bin_code}")
 async def bin_tool(bin_code: str):
     return get_bin_details(bin_code)
+
+# --- Day 2: MCC Lookup Tool ---
+@app.get("/v1/tools/mcc/{mcc_code}")
+async def mcc_tool(mcc_code: str):
+    return get_mcc_details(mcc_code)
