@@ -1,4 +1,5 @@
-﻿
+﻿from app.tools.iban_validator import validate_iban
+
 from app.tools.bin_lookup import get_bin_details
 from app.tools.mcc_lookup import get_mcc_details
 """
@@ -80,3 +81,9 @@ async def bin_tool(bin_code: str):
 @app.get("/v1/tools/mcc/{mcc_code}")
 async def mcc_tool(mcc_code: str):
     return get_mcc_details(mcc_code)
+
+# --- Tool 3: IBAN Validator ---
+@app.get("/v1/tools/iban/{iban_code}")
+async def iban_tool(iban_code: str):
+    return validate_iban(iban_code)
+
