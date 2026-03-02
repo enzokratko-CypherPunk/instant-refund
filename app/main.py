@@ -1,4 +1,5 @@
-﻿from app.tools.decline_codes import interpret_decline_code
+﻿from app.tools.swift_lookup import lookup_swift
+from app.tools.decline_codes import interpret_decline_code
 from app.tools.iban_validator import validate_iban
 
 from app.tools.bin_lookup import get_bin_details
@@ -93,4 +94,10 @@ async def iban_tool(iban_code: str):
 @app.get("/v1/tools/decline/{code}")
 async def decline_tool(code: str):
     return interpret_decline_code(code)
+
+
+# --- Tool 5: SWIFT/BIC Lookup ---
+@app.get("/v1/tools/swift/{swift_code}")
+async def swift_tool(swift_code: str):
+    return lookup_swift(swift_code)
 
