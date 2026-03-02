@@ -1,4 +1,5 @@
-﻿from app.tools.currency_converter import convert_currency
+﻿from app.tools.wallet_validator import validate_wallet
+from app.tools.currency_converter import convert_currency
 from app.tools.swift_lookup import lookup_swift
 from app.tools.decline_codes import interpret_decline_code
 from app.tools.iban_validator import validate_iban
@@ -107,4 +108,10 @@ async def swift_tool(swift_code: str):
 @app.get("/v1/tools/currency/{from_currency}/{to_currency}/{amount}")
 async def currency_tool(from_currency: str, to_currency: str, amount: float):
     return await convert_currency(from_currency, to_currency, amount)
+
+
+# --- Tool 7: Wallet Address Validator ---
+@app.get("/v1/tools/wallet/{address}")
+async def wallet_tool(address: str, chain: str = ""):
+    return validate_wallet(address, chain)
 
