@@ -1,8 +1,8 @@
-fastapi
+﻿fastapi
 uvicorn
 pydantic<2.0.0
 requests
-requests
+httpx
 ecdsa
 grpcio
 protobuf
