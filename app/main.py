@@ -1,4 +1,5 @@
-﻿from app.tools.iban_validator import validate_iban
+﻿from app.tools.decline_codes import interpret_decline_code
+from app.tools.iban_validator import validate_iban
 
 from app.tools.bin_lookup import get_bin_details
 from app.tools.mcc_lookup import get_mcc_details
@@ -86,4 +87,10 @@ async def mcc_tool(mcc_code: str):
 @app.get("/v1/tools/iban/{iban_code}")
 async def iban_tool(iban_code: str):
     return validate_iban(iban_code)
+
+
+# --- Tool 4: Decline Code Interpreter ---
+@app.get("/v1/tools/decline/{code}")
+async def decline_tool(code: str):
+    return interpret_decline_code(code)
 
