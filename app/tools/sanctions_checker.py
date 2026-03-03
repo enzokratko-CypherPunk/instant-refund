@@ -3,7 +3,7 @@ import httpx
 import csv
 import io
 
-OFAC_URL = "https://ofac.treasury.gov/downloads/sdn.csv"
+OFAC_URL = "https://www.treasury.gov/ofac/downloads/sdn.csv"
 
 _SDN_CACHE: List[Dict] = []
 _CACHE_DATE: str = ""
@@ -14,19 +14,19 @@ async def _load_ofac_list() -> List[Dict]:
     today = str(date.today())
     if _SDN_CACHE and _CACHE_DATE == today:
         return _SDN_CACHE
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(OFAC_URL, timeout=30)
+    async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+        resp = await client.get(OFAC_URL)
         content = resp.text
-    reader = csv.reader(io.StringIO(content))
+    reader = csv.reader(io.StringIO(content), quotechar='"', skipinitialspace=True)
     records = []
     for row in reader:
-        if len(row) >= 12:
+        if len(row) >= 12 and row[1].strip() and row[1].strip() != "-0-":
             records.append({
                 "name": row[1].strip().lower(),
                 "display_name": row[1].strip(),
-                "type": row[2].strip(),
-                "program": row[3].strip(),
-                "remarks": row[11].strip(),
+                "type": row[2].strip() if row[2].strip() != "-0-" else "",
+                "program": row[3].strip() if row[3].strip() != "-0-" else "",
+                "remarks": row[11].strip() if row[11].strip() != "-0-" else "",
             })
     _SDN_CACHE = records
     _CACHE_DATE = today
@@ -88,4 +88,3 @@ async def get_sanctions_status() -> Dict[str, Any]:
         "cache_date": str(date.today()),
         "update_frequency": "Daily"
     }
-
