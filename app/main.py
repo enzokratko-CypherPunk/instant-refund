@@ -1,4 +1,5 @@
-﻿from app.tools.wallet_validator import validate_wallet
+﻿from app.tools.sanctions_checker import check_sanctions, get_sanctions_status
+from app.tools.wallet_validator import validate_wallet
 from app.tools.currency_converter import convert_currency
 from app.tools.swift_lookup import lookup_swift
 from app.tools.decline_codes import interpret_decline_code
@@ -115,3 +116,12 @@ async def currency_tool(from_currency: str, to_currency: str, amount: float):
 async def wallet_tool(address: str, chain: str = ""):
     return validate_wallet(address, chain)
 
+
+# --- Tool 8: Sanctions List Checker ---
+@app.get("/v1/tools/sanctions/status")
+async def sanctions_status():
+    return await get_sanctions_status()
+
+@app.get("/v1/tools/sanctions/screen/{name}")
+async def sanctions_screen(name: str, threshold: int = 75):
+    return await check_sanctions(name, threshold)
