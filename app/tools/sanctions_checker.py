@@ -3,7 +3,7 @@ import httpx
 import csv
 import io
 
-OFAC_URL = "https://www.treasury.gov/ofac/downloads/sdn.csv"
+OFAC_URL = "https://ofac.treasury.gov/downloads/sdn.csv"
 
 _SDN_CACHE: List[Dict] = []
 _CACHE_DATE: str = ""
@@ -88,3 +88,4 @@ async def get_sanctions_status() -> Dict[str, Any]:
         "cache_date": str(date.today()),
         "update_frequency": "Daily"
     }
+
