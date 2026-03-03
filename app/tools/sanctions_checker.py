@@ -56,7 +56,7 @@ def _fuzzy_score(query: str, candidate: str) -> int:
         return 0
     f1 = 2 * precision * recall / (precision + recall)
     contains_bonus = 15 if all(w in c_clean for w in q_words)  else 0
-    return min(100, int(f1 * 100) + contains_bonus) + contains_bonus)
+    return min(100, int(f1 * 100) + contains_bonus)
 
 async def check_sanctions(name: str, threshold: int = 75) -> Dict[str, Any]:
     if not name or len(name.strip()) < 2:
@@ -103,4 +103,5 @@ async def get_sanctions_status() -> Dict[str, Any]:
         "cache_date": str(date.today()),
         "update_frequency": "Daily"
     }
+
 
