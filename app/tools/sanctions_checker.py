@@ -3,9 +3,7 @@ import httpx
 import csv
 import io
 
-# GitHub-hosted OFAC SDN mirror - not blocked by cloud providers
-OFAC_URL = "https://raw.githubusercontent.com/ofac-sanctions/ofac-sdn/main/sdn.csv"
-OFAC_FALLBACK = "https://ofac.treasury.gov/downloads/sdn.csv"
+OFAC_URL = "https://data.opensanctions.org/datasets/latest/us_ofac_sdn/targets.simple.csv"
 
 _SDN_CACHE: List[Dict] = []
 _CACHE_DATE: str = ""
@@ -16,51 +14,35 @@ async def _load_ofac_list() -> List[Dict]:
     today = str(date.today())
     if _SDN_CACHE and _CACHE_DATE == today:
         return _SDN_CACHE
-
-    urls = [OFAC_FALLBACK, OFAC_URL]
-    raw = ""
-
-    for url in urls:
-        try:
-            headers = {
-                "User-Agent": "Mozilla/5.0 (compatible; SanctionsChecker/1.0)",
-                "Accept": "text/csv,text/plain,*/*",
-                "Accept-Encoding": "identity",
-            }
-            async with httpx.AsyncClient(follow_redirects=True) as client:
-                resp = await client.get(url, timeout=60, headers=headers)
-                candidate = resp.content.decode("latin-1", errors="replace")
-                if "<!DOCTYPE" not in candidate[:500] and "<html" not in candidate[:500] and len(candidate) > 1000:
-                    raw = candidate
-                    break
-        except Exception:
-            continue
-
-    if not raw:
-        return _SDN_CACHE  # return stale cache if download fails
-
+    async with httpx.AsyncClient(follow_redirects=True) as client:
+        resp = await client.get(OFAC_URL, timeout=60)
+        raw = resp.content.decode("utf-8", errors="replace")
     records = []
-    reader = csv.reader(io.StringIO(raw))
+    reader = csv.DictReader(io.StringIO(raw))
     for row in reader:
-        if len(row) >= 4 and row[1].strip() and row[1].strip() != "SDN_Name":
+        name = row.get("name", "").strip()
+        aliases = row.get("aliases", "").strip()
+        sanctions = row.get("sanctions", "").strip()
+        schema = row.get("schema", "").strip()
+        if name:
             records.append({
-                "name": row[1].strip().lower(),
-                "display_name": row[1].strip(),
-                "type": row[2].strip() if len(row) > 2 else "",
-                "program": row[3].strip() if len(row) > 3 else "",
-                "remarks": row[11].strip() if len(row) > 11 else "",
+                "name": name.lower(),
+                "display_name": name,
+                "aliases": aliases,
+                "type": schema,
+                "program": sanctions,
+                "remarks": "",
             })
+    _SDN_CACHE = records
+    _CACHE_DATE = today
+    return records
 
-    if records:
-        _SDN_CACHE = records
-        _CACHE_DATE = today
-
-    return _SDN_CACHE
-
-def _fuzzy_score(query: str, candidate: str) -> int:
+def _fuzzy_score(query: str, candidate: str, aliases: str = "") -> int:
     q_words = set(query.lower().split())
     c_clean = candidate.lower().replace(",", " ")
-    c_words = set(c_clean.split())
+    a_clean = aliases.lower().replace(";", " ").replace(",", " ")
+    combined = c_clean + " " + a_clean
+    c_words = set(combined.split())
     if not q_words or not c_words:
         return 0
     intersection = q_words & c_words
@@ -71,7 +53,7 @@ def _fuzzy_score(query: str, candidate: str) -> int:
     if precision + recall == 0:
         return 0
     f1 = 2 * precision * recall / (precision + recall)
-    contains_bonus = 15 if all(w in c_clean for w in q_words) else 0
+    contains_bonus = 15 if all(w in combined for w in q_words) else 0
     return min(100, int(f1 * 100) + contains_bonus)
 
 async def check_sanctions(name: str, threshold: int = 75) -> Dict[str, Any]:
@@ -83,14 +65,14 @@ async def check_sanctions(name: str, threshold: int = 75) -> Dict[str, Any]:
     query = name.strip().lower()
     matches = []
     for record in records:
-        score = _fuzzy_score(query, record["name"])
+        score = _fuzzy_score(query, record["name"], record["aliases"])
         if score >= threshold:
             matches.append({
                 "matched_name": record["display_name"],
+                "aliases": record["aliases"],
                 "score": score,
                 "type": record["type"],
                 "program": record["program"],
-                "remarks": record["remarks"][:200] if record["remarks"] else "",
                 "list": "OFAC SDN"
             })
     matches.sort(key=lambda x: x["score"], reverse=True)
@@ -102,7 +84,7 @@ async def check_sanctions(name: str, threshold: int = 75) -> Dict[str, Any]:
         "hit": len(top_matches) > 0,
         "match_count": len(top_matches),
         "matches": top_matches,
-        "list_source": "OFAC SDN (US Treasury)"
+        "list_source": "OFAC SDN via OpenSanctions"
     }
 
 async def get_sanctions_status() -> Dict[str, Any]:
@@ -111,8 +93,8 @@ async def get_sanctions_status() -> Dict[str, Any]:
     return {
         "status": "success",
         "list": "OFAC SDN",
-        "source": "US Treasury - Office of Foreign Assets Control",
-        "url": OFAC_FALLBACK,
+        "source": "US Treasury via OpenSanctions",
+        "url": OFAC_URL,
         "records_loaded": len(records),
         "cache_date": str(date.today()),
         "update_frequency": "Daily"
