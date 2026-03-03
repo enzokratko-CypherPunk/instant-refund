@@ -1,4 +1,5 @@
-﻿from app.tools.fraud_score import calculate_fraud_score
+﻿from app.tools.token_price import get_token_price
+from app.tools.fraud_score import calculate_fraud_score
 from app.tools.iso8583_parser import parse_iso8583
 from app.tools.routing_validator import lookup_routing
 from app.tools.pep_checker import check_pep, get_pep_status
@@ -164,3 +165,8 @@ async def fraud_score_tool(
     is_anonymous: bool = False
 ):
     return calculate_fraud_score(card_type, network, country_code, is_commercial, is_anonymous)
+
+# --- Tool 13: Token Price Feed ---
+@app.get("/v1/tools/token-price/{token}")
+async def token_price_tool(token: str, currency: str = "usd"):
+    return await get_token_price(token, currency)
