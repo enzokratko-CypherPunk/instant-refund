@@ -1,4 +1,5 @@
-﻿from app.tools.iso8583_parser import parse_iso8583
+﻿from app.tools.fraud_score import calculate_fraud_score
+from app.tools.iso8583_parser import parse_iso8583
 from app.tools.routing_validator import lookup_routing
 from app.tools.pep_checker import check_pep, get_pep_status
 # Sanctions threshold: 60
@@ -152,3 +153,14 @@ async def routing_tool(routing_number: str):
 async def iso8583_tool(message: str):
     return parse_iso8583(message)
 
+
+# --- Tool 12: Card BIN Fraud Score ---
+@app.get("/v1/tools/fraud-score")
+async def fraud_score_tool(
+    card_type: str = "credit",
+    network: str = "Visa",
+    country_code: str = "US",
+    is_commercial: bool = False,
+    is_anonymous: bool = False
+):
+    return calculate_fraud_score(card_type, network, country_code, is_commercial, is_anonymous)
