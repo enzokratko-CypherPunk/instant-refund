@@ -1,4 +1,4 @@
-﻿from app.tools.pep_checker import check_pep, get_pep_status
+from app.tools.pep_checker import check_pep, get_pep_status
 # Sanctions threshold: 60
 from app.tools.sanctions_checker import check_sanctions, get_sanctions_status
 from app.tools.wallet_validator import validate_wallet
