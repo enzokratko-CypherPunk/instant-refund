@@ -1,4 +1,5 @@
-﻿from app.tools.sanctions_checker import check_sanctions, get_sanctions_status
+﻿# Sanctions threshold: 60
+from app.tools.sanctions_checker import check_sanctions, get_sanctions_status
 from app.tools.wallet_validator import validate_wallet
 from app.tools.currency_converter import convert_currency
 from app.tools.swift_lookup import lookup_swift
@@ -125,3 +126,4 @@ async def sanctions_status():
 @app.get("/v1/tools/sanctions/screen/{name}")
 async def sanctions_screen(name: str, threshold: int = 75):
     return await check_sanctions(name, threshold)
+
