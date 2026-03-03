@@ -1,4 +1,5 @@
-﻿# Sanctions threshold: 60
+﻿from app.tools.pep_checker import check_pep, get_pep_status
+# Sanctions threshold: 60
 from app.tools.sanctions_checker import check_sanctions, get_sanctions_status
 from app.tools.wallet_validator import validate_wallet
 from app.tools.currency_converter import convert_currency
@@ -128,3 +129,12 @@ async def sanctions_screen(name: str, threshold: int = 60):
     return await check_sanctions(name, threshold)
 
 
+
+# --- Tool 9: PEP Screening ---
+@app.get("/v1/tools/pep/status")
+async def pep_status():
+    return await get_pep_status()
+
+@app.get("/v1/tools/pep/screen/{name}")
+async def pep_screen(name: str, threshold: int = 60):
+    return await check_pep(name, threshold)
