@@ -36,22 +36,22 @@ def calculate_fraud_score(
     commercial_bonus = 10 if is_commercial else 0
     anonymous_bonus = 25 if is_anonymous else 0
 
-    raw_score = (country_score * 0.45) + (type_score * 0.30) + (network_score * 0.15) + (commercial_bonus * 0.05) + (anonymous_bonus * 0.05)
+    raw_score = (country_score * 0.40) + (type_score * 0.25) + (network_score * 0.20) + (commercial_bonus * 0.05) + (anonymous_bonus * 0.10)
     fraud_score = min(100, round(raw_score))
 
     if fraud_score <= 20:
         risk_level = "LOW"
         recommendation = "Approve"
         explanation = "Card profile matches low-risk characteristics."
-    elif fraud_score <= 40:
+    elif fraud_score <= 35:
         risk_level = "MEDIUM-LOW"
         recommendation = "Approve with standard monitoring"
         explanation = "Minor risk indicators present. Standard fraud monitoring recommended."
-    elif fraud_score <= 60:
+    elif fraud_score <= 45:
         risk_level = "MEDIUM"
         recommendation = "Approve with enhanced monitoring"
         explanation = "Moderate risk indicators. Consider step-up authentication."
-    elif fraud_score <= 75:
+    elif fraud_score <= 60:
         risk_level = "MEDIUM-HIGH"
         recommendation = "Review before approval"
         explanation = "Multiple risk indicators. Manual review or 3DS authentication recommended."
@@ -89,3 +89,7 @@ def calculate_fraud_score(
             "anonymous_bonus": anonymous_bonus,
         }
     }
+
+
+
+
