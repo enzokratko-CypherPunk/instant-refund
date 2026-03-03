@@ -1,39 +1,30 @@
 ﻿from typing import Dict, Any, List
-import httpx
 import csv
-import io
+import os
 
-PEP_URL = "https://data.opensanctions.org/datasets/latest/peps/targets.simple.csv"
+PEP_FILE = os.path.join(os.path.dirname(__file__), "..", "..", "app", "data", "peps.csv")
 
 _PEP_CACHE: List[Dict] = []
-_CACHE_DATE: str = ""
 
-async def _load_pep_list() -> List[Dict]:
-    global _PEP_CACHE, _CACHE_DATE
-    from datetime import date
-    today = str(date.today())
-    if _PEP_CACHE and _CACHE_DATE == today:
+def _load_pep_list() -> List[Dict]:
+    global _PEP_CACHE
+    if _PEP_CACHE:
         return _PEP_CACHE
-    async with httpx.AsyncClient(follow_redirects=True) as client:
-        resp = await client.get(PEP_URL, timeout=60)
-        raw = resp.content.decode("utf-8", errors="replace")
     records = []
-    reader = csv.DictReader(io.StringIO(raw))
-    for row in reader:
-        name = row.get("name", "").strip()
-        aliases = row.get("aliases", "").strip()
-        positions = row.get("position", "").strip()
-        countries = row.get("countries", "").strip()
-        if name:
-            records.append({
-                "name": name.lower(),
-                "display_name": name,
-                "aliases": aliases,
-                "positions": positions,
-                "countries": countries,
-            })
+    filepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "peps.csv"))
+    with open(filepath, encoding="utf-8", errors="replace") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            name = row.get("name", "").strip()
+            if name:
+                records.append({
+                    "name": name.lower(),
+                    "display_name": name,
+                    "aliases": row.get("aliases", ""),
+                    "positions": row.get("position", ""),
+                    "countries": row.get("countries", ""),
+                })
     _PEP_CACHE = records
-    _CACHE_DATE = today
     return records
 
 def _fuzzy_score(query: str, candidate: str, aliases: str = "") -> int:
@@ -58,9 +49,9 @@ def _fuzzy_score(query: str, candidate: str, aliases: str = "") -> int:
 async def check_pep(name: str, threshold: int = 60):
     if not name or len(name.strip()) < 2:
         return {"status": "error", "error": "Name must be at least 2 characters"}
-    records = await _load_pep_list()
+    records = _load_pep_list()
     if not records:
-        return {"status": "error", "error": "PEP list unavailable. Please try again shortly."}
+        return {"status": "error", "error": "PEP list unavailable"}
     query = name.strip().lower()
     matches = []
     for record in records:
@@ -87,14 +78,11 @@ async def check_pep(name: str, threshold: int = 60):
     }
 
 async def get_pep_status():
-    from datetime import date
-    records = await _load_pep_list()
+    records = _load_pep_list()
     return {
         "status": "success",
         "list": "PEP",
         "source": "OpenSanctions",
-        "url": PEP_URL,
         "records_loaded": len(records),
-        "cache_date": str(date.today()),
         "update_frequency": "Daily"
     }
