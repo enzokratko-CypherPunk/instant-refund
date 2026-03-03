@@ -1,3 +1,4 @@
+﻿from app.tools.routing_validator import lookup_routing
 from app.tools.pep_checker import check_pep, get_pep_status
 # Sanctions threshold: 60
 from app.tools.sanctions_checker import check_sanctions, get_sanctions_status
@@ -138,3 +139,9 @@ async def pep_status():
 @app.get("/v1/tools/pep/screen/{name}")
 async def pep_screen(name: str, threshold: int = 60):
     return await check_pep(name, threshold)
+
+# --- Tool 10: Routing Number Validator ---
+@app.get("/v1/tools/routing/{routing_number}")
+async def routing_tool(routing_number: str):
+    return lookup_routing(routing_number)
+
