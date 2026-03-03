@@ -15,15 +15,18 @@ async def _load_ofac_list() -> List[Dict]:
     if _SDN_CACHE and _CACHE_DATE == today:
         return _SDN_CACHE
     headers = {
-        "User-Agent": "Mozilla/5.0",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Accept": "text/csv,text/plain,*/*",
-        "Accept-Encoding": "identity"
+        "Accept-Encoding": "identity",
+        "Referer": "https://ofac.treasury.gov/"
     }
     async with httpx.AsyncClient(follow_redirects=True) as client:
-        resp = await client.get(OFAC_URL, timeout=30, headers=headers)
-        content = resp.content.decode("latin-1", errors="replace")
+        resp = await client.get(OFAC_URL, timeout=60, headers=headers)
+        raw = resp.content.decode("latin-1", errors="replace")
     records = []
-    reader = csv.reader(io.StringIO(content))
+    if "<!DOCTYPE" in raw[:500] or "<html" in raw[:500]:
+        return records
+    reader = csv.reader(io.StringIO(raw))
     for row in reader:
         if len(row) >= 4 and row[1].strip() and row[1].strip() != "SDN_Name":
             records.append({
