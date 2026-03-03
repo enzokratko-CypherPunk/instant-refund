@@ -1,4 +1,5 @@
-﻿from app.tools.routing_validator import lookup_routing
+﻿from app.tools.iso8583_parser import parse_iso8583
+from app.tools.routing_validator import lookup_routing
 from app.tools.pep_checker import check_pep, get_pep_status
 # Sanctions threshold: 60
 from app.tools.sanctions_checker import check_sanctions, get_sanctions_status
@@ -144,4 +145,10 @@ async def pep_screen(name: str, threshold: int = 60):
 @app.get("/v1/tools/routing/{routing_number}")
 async def routing_tool(routing_number: str):
     return lookup_routing(routing_number)
+
+
+# --- Tool 11: ISO 8583 Message Parser ---
+@app.get("/v1/tools/iso8583/{message}")
+async def iso8583_tool(message: str):
+    return parse_iso8583(message)
 
