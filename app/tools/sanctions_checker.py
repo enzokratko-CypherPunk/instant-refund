@@ -14,17 +14,14 @@ async def _load_ofac_list() -> List[Dict]:
     today = str(date.today())
     if _SDN_CACHE and _CACHE_DATE == today:
         return _SDN_CACHE
-
     headers = {
         "User-Agent": "Mozilla/5.0",
         "Accept": "text/csv,text/plain,*/*",
         "Accept-Encoding": "identity"
     }
-
     async with httpx.AsyncClient(follow_redirects=True) as client:
         resp = await client.get(OFAC_URL, timeout=30, headers=headers)
         content = resp.content.decode("latin-1", errors="replace")
-
     records = []
     reader = csv.reader(io.StringIO(content))
     for row in reader:
@@ -36,7 +33,6 @@ async def _load_ofac_list() -> List[Dict]:
                 "program": row[3].strip() if len(row) > 3 else "",
                 "remarks": row[11].strip() if len(row) > 11 else "",
             })
-
     _SDN_CACHE = records
     _CACHE_DATE = today
     return records
@@ -55,17 +51,15 @@ def _fuzzy_score(query: str, candidate: str) -> int:
     if precision + recall == 0:
         return 0
     f1 = 2 * precision * recall / (precision + recall)
-    contains_bonus = 15 if all(w in c_clean for w in q_words)  else 0
+    contains_bonus = 15 if all(w in c_clean for w in q_words) else 0
     return min(100, int(f1 * 100) + contains_bonus)
 
 async def check_sanctions(name: str, threshold: int = 75) -> Dict[str, Any]:
     if not name or len(name.strip()) < 2:
         return {"status": "error", "error": "Name must be at least 2 characters"}
-
     records = await _load_ofac_list()
     query = name.strip().lower()
     matches = []
-
     for record in records:
         score = _fuzzy_score(query, record["name"])
         if score >= threshold:
@@ -77,10 +71,8 @@ async def check_sanctions(name: str, threshold: int = 75) -> Dict[str, Any]:
                 "remarks": record["remarks"][:200] if record["remarks"] else "",
                 "list": "OFAC SDN"
             })
-
     matches.sort(key=lambda x: x["score"], reverse=True)
     top_matches = matches[:5]
-
     return {
         "status": "success",
         "query": name,
@@ -103,5 +95,3 @@ async def get_sanctions_status() -> Dict[str, Any]:
         "cache_date": str(date.today()),
         "update_frequency": "Daily"
     }
-
-
