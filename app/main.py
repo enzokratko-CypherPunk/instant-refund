@@ -124,6 +124,7 @@ async def sanctions_status():
     return await get_sanctions_status()
 
 @app.get("/v1/tools/sanctions/screen/{name}")
-async def sanctions_screen(name: str, threshold: int = 75):
+async def sanctions_screen(name: str, threshold: int = 60):
     return await check_sanctions(name, threshold)
+
 
