@@ -3,7 +3,9 @@ import httpx
 import csv
 import io
 
-OFAC_URL = "https://ofac.treasury.gov/downloads/sdn.csv"
+# GitHub-hosted OFAC SDN mirror - not blocked by cloud providers
+OFAC_URL = "https://raw.githubusercontent.com/ofac-sanctions/ofac-sdn/main/sdn.csv"
+OFAC_FALLBACK = "https://ofac.treasury.gov/downloads/sdn.csv"
 
 _SDN_CACHE: List[Dict] = []
 _CACHE_DATE: str = ""
@@ -14,18 +16,30 @@ async def _load_ofac_list() -> List[Dict]:
     today = str(date.today())
     if _SDN_CACHE and _CACHE_DATE == today:
         return _SDN_CACHE
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "text/csv,text/plain,*/*",
-        "Accept-Encoding": "identity",
-        "Referer": "https://ofac.treasury.gov/"
-    }
-    async with httpx.AsyncClient(follow_redirects=True) as client:
-        resp = await client.get(OFAC_URL, timeout=60, headers=headers)
-        raw = resp.content.decode("latin-1", errors="replace")
+
+    urls = [OFAC_FALLBACK, OFAC_URL]
+    raw = ""
+
+    for url in urls:
+        try:
+            headers = {
+                "User-Agent": "Mozilla/5.0 (compatible; SanctionsChecker/1.0)",
+                "Accept": "text/csv,text/plain,*/*",
+                "Accept-Encoding": "identity",
+            }
+            async with httpx.AsyncClient(follow_redirects=True) as client:
+                resp = await client.get(url, timeout=60, headers=headers)
+                candidate = resp.content.decode("latin-1", errors="replace")
+                if "<!DOCTYPE" not in candidate[:500] and "<html" not in candidate[:500] and len(candidate) > 1000:
+                    raw = candidate
+                    break
+        except Exception:
+            continue
+
+    if not raw:
+        return _SDN_CACHE  # return stale cache if download fails
+
     records = []
-    if "<!DOCTYPE" in raw[:500] or "<html" in raw[:500]:
-        return records
     reader = csv.reader(io.StringIO(raw))
     for row in reader:
         if len(row) >= 4 and row[1].strip() and row[1].strip() != "SDN_Name":
@@ -36,9 +50,12 @@ async def _load_ofac_list() -> List[Dict]:
                 "program": row[3].strip() if len(row) > 3 else "",
                 "remarks": row[11].strip() if len(row) > 11 else "",
             })
-    _SDN_CACHE = records
-    _CACHE_DATE = today
-    return records
+
+    if records:
+        _SDN_CACHE = records
+        _CACHE_DATE = today
+
+    return _SDN_CACHE
 
 def _fuzzy_score(query: str, candidate: str) -> int:
     q_words = set(query.lower().split())
@@ -61,6 +78,8 @@ async def check_sanctions(name: str, threshold: int = 75) -> Dict[str, Any]:
     if not name or len(name.strip()) < 2:
         return {"status": "error", "error": "Name must be at least 2 characters"}
     records = await _load_ofac_list()
+    if not records:
+        return {"status": "error", "error": "Sanctions list unavailable. Please try again shortly."}
     query = name.strip().lower()
     matches = []
     for record in records:
@@ -93,7 +112,7 @@ async def get_sanctions_status() -> Dict[str, Any]:
         "status": "success",
         "list": "OFAC SDN",
         "source": "US Treasury - Office of Foreign Assets Control",
-        "url": OFAC_URL,
+        "url": OFAC_FALLBACK,
         "records_loaded": len(records),
         "cache_date": str(date.today()),
         "update_frequency": "Daily"
