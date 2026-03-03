@@ -47,7 +47,7 @@ def calculate_fraud_score(
         risk_level = "MEDIUM-LOW"
         recommendation = "Approve with standard monitoring"
         explanation = "Minor risk indicators present. Standard fraud monitoring recommended."
-    elif fraud_score <= 45:
+    elif fraud_score <= 44:
         risk_level = "MEDIUM"
         recommendation = "Approve with enhanced monitoring"
         explanation = "Moderate risk indicators. Consider step-up authentication."
@@ -89,6 +89,7 @@ def calculate_fraud_score(
             "anonymous_bonus": anonymous_bonus,
         }
     }
+
 
 
 
