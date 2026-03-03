@@ -31,7 +31,6 @@ async def _load_ofac_list() -> List[Dict]:
                 "aliases": aliases,
                 "type": schema,
                 "program": sanctions,
-                "remarks": "",
             })
     _SDN_CACHE = records
     _CACHE_DATE = today
@@ -56,7 +55,7 @@ def _fuzzy_score(query: str, candidate: str, aliases: str = "") -> int:
     contains_bonus = 15 if all(w in combined for w in q_words) else 0
     return min(100, int(f1 * 100) + contains_bonus)
 
-async def check_sanctions(name: str, threshold: int = 60) -> Dict[str, Any]:
+async def check_sanctions(name: str, threshold: int = 60):
     if not name or len(name.strip()) < 2:
         return {"status": "error", "error": "Name must be at least 2 characters"}
     records = await _load_ofac_list()
@@ -87,7 +86,7 @@ async def check_sanctions(name: str, threshold: int = 60) -> Dict[str, Any]:
         "list_source": "OFAC SDN via OpenSanctions"
     }
 
-async def get_sanctions_status() -> Dict[str, Any]:
+async def get_sanctions_status():
     from datetime import date
     records = await _load_ofac_list()
     return {
@@ -99,6 +98,3 @@ async def get_sanctions_status() -> Dict[str, Any]:
         "cache_date": str(date.today()),
         "update_frequency": "Daily"
     }
-
-
-
