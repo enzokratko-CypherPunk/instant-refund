@@ -85,3 +85,4 @@ async def check_defi_health(protocol: str) -> Dict[str, Any]:
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
