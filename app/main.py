@@ -185,7 +185,7 @@ async def defi_health_tool(protocol: str):
     return await check_defi_health(protocol)
 
 # --- Tool 16: Payment Intelligence API (Flagship) ---
-@app.post("/v1/tools/payment-intelligence")
+@app.get("/v1/tools/payment-intelligence")
 async def payment_intelligence_tool(
     card_bin: str = "411111",
     decline_code: str = "51",
@@ -196,3 +196,4 @@ async def payment_intelligence_tool(
     network: str = "Visa"
 ):
     return await analyze_payment(card_bin, decline_code, merchant_mcc, transaction_amount, country_code, card_type, network)
+
