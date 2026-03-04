@@ -1,7 +1,7 @@
 ﻿from typing import Dict, Any, Optional
-from app.tools.bin_lookup import lookup_bin
-from app.tools.decline_codes import interpret_decline
-from app.tools.mcc_lookup import lookup_mcc
+from app.tools.bin_lookup import get_bin_details
+from app.tools.decline_codes import interpret_decline_code
+from app.tools.mcc_lookup import get_mcc_details
 from app.tools.fraud_score import calculate_fraud_score
 
 RETRY_MATRIX = {
@@ -105,9 +105,9 @@ async def analyze_payment(
 ) -> Dict[str, Any]:
 
     # Pull from existing tools
-    bin_data = lookup_bin(card_bin) if card_bin else {}
-    decline_data = interpret_decline(decline_code) if decline_code else {}
-    mcc_data = lookup_mcc(merchant_mcc) if merchant_mcc else {}
+    bin_data = get_bin_details(card_bin) if card_bin else {}
+    decline_data = interpret_decline_code(decline_code) if decline_code else {}
+    mcc_data = get_mcc_details(merchant_mcc) if merchant_mcc else {}
 
     # Use BIN data if available
     resolved_card_type = bin_data.get("card_type", card_type) or card_type
@@ -169,3 +169,4 @@ async def analyze_payment(
         },
         "data_sources": ["Internal BIN DB", "OFAC Logic", "IRS Prefix Rules", "Payments Domain Intelligence"]
     }
+
