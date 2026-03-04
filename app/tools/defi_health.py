@@ -76,7 +76,7 @@ async def check_defi_health(protocol: str) -> Dict[str, Any]:
             "category": proto["category"],
             "health_status": status,
             "tvl_usd": round(current_tvl, 2),
-            "tvl_formatted": f"B" if current_tvl >= 1e9 else f"M",
+            "tvl_formatted": str("USD ") + (f"{current_tvl/1_000_000_000:.2f}B" if current_tvl >= 1e9 else f"{current_tvl/1_000_000:.2f}M"),
             "tvl_change_24h_pct": round(tvl_change_24h, 4),
             "risk_level": risk["risk"],
             "risk_assessment": risk["assessment"],
@@ -85,4 +85,5 @@ async def check_defi_health(protocol: str) -> Dict[str, Any]:
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
 
