@@ -1,4 +1,5 @@
-﻿from app.tools.defi_health import check_defi_health
+﻿from app.tools.payment_intelligence import analyze_payment
+from app.tools.defi_health import check_defi_health
 from app.tools.ein_validator import validate_ein
 from app.tools.token_price import get_token_price
 from app.tools.fraud_score import calculate_fraud_score
@@ -182,3 +183,16 @@ async def ein_validator_tool(ein: str):
 @app.get("/v1/tools/defi-health/{protocol}")
 async def defi_health_tool(protocol: str):
     return await check_defi_health(protocol)
+
+# --- Tool 16: Payment Intelligence API (Flagship) ---
+@app.post("/v1/tools/payment-intelligence")
+async def payment_intelligence_tool(
+    card_bin: str = "411111",
+    decline_code: str = "51",
+    merchant_mcc: str = "5411",
+    transaction_amount: float = 100.00,
+    country_code: str = "US",
+    card_type: str = "credit",
+    network: str = "Visa"
+):
+    return await analyze_payment(card_bin, decline_code, merchant_mcc, transaction_amount, country_code, card_type, network)
