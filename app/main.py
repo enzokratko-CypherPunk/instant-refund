@@ -1,4 +1,5 @@
-﻿from app.tools.token_price import get_token_price
+﻿from app.tools.ein_validator import validate_ein
+from app.tools.token_price import get_token_price
 from app.tools.fraud_score import calculate_fraud_score
 from app.tools.iso8583_parser import parse_iso8583
 from app.tools.routing_validator import lookup_routing
@@ -170,3 +171,8 @@ async def fraud_score_tool(
 @app.get("/v1/tools/token-price/{token}")
 async def token_price_tool(token: str, currency: str = "usd"):
     return await get_token_price(token, currency)
+
+# --- Tool 14: EIN / Business Registry Verifier ---
+@app.get("/v1/tools/ein/{ein}")
+async def ein_validator_tool(ein: str):
+    return validate_ein(ein)
