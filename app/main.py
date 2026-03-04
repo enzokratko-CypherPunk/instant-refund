@@ -1,4 +1,5 @@
-﻿from app.tools.ein_validator import validate_ein
+﻿from app.tools.defi_health import check_defi_health
+from app.tools.ein_validator import validate_ein
 from app.tools.token_price import get_token_price
 from app.tools.fraud_score import calculate_fraud_score
 from app.tools.iso8583_parser import parse_iso8583
@@ -176,3 +177,8 @@ async def token_price_tool(token: str, currency: str = "usd"):
 @app.get("/v1/tools/ein/{ein}")
 async def ein_validator_tool(ein: str):
     return validate_ein(ein)
+
+# --- Tool 15: DeFi Health Checker ---
+@app.get("/v1/tools/defi-health/{protocol}")
+async def defi_health_tool(protocol: str):
+    return await check_defi_health(protocol)
