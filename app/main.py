@@ -1,4 +1,5 @@
-﻿from app.tools.payment_intelligence import analyze_payment
+﻿from app.tools.payee_verification import validate_uk_cop, validate_eu_vop
+from app.tools.payment_intelligence import analyze_payment
 from app.tools.defi_health import check_defi_health
 from app.tools.ein_validator import validate_ein
 from app.tools.token_price import get_token_price
@@ -197,3 +198,12 @@ async def payment_intelligence_tool(
 ):
     return await analyze_payment(card_bin, decline_code, merchant_mcc, transaction_amount, country_code, card_type, network)
 
+
+# --- Tool 17: Payee Verification (COP + EU VOP) ---
+@app.get("/v1/tools/cop")
+async def uk_cop_tool(sort_code: str = "20-00-00", account_number: str = "12345678", account_name: str = "John Smith", account_type: str = "personal"):
+    return validate_uk_cop(sort_code, account_number, account_name, account_type)
+
+@app.get("/v1/tools/vop")
+async def eu_vop_tool(iban: str = "GB82WEST12345698765432", account_name: str = "John Smith"):
+    return validate_eu_vop(iban, account_name)
