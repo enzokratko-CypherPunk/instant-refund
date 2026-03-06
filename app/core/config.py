@@ -25,3 +25,8 @@ class Settings(BaseSettings):
     KASPAD_PORT: int = 16110
 
 settings = Settings()
+
+
+# Module-level exports for direct import
+SIGNER_SHARED_SECRET = _require_env('SIGNER_SHARED_SECRET', secret=True)
+SIGNER_URL = os.environ.get('SIGNER_URL', 'http://instant-refund-signer:8080/sign')
