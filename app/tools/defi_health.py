@@ -47,7 +47,8 @@ async def check_defi_health(protocol: str) -> Dict[str, Any]:
             r = await client.get(
                 f"https://api.llama.fi/protocol/{proto['slug']}"
             )
-        data = r.raise_for_status() r.json()
+            r.raise_for_status()
+            data = r.json()
         
         tvl = data.get("currentChainTvls", {})
         total_tvl = data.get("tvl", [{}])

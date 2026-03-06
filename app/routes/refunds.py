@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 
 import secrets
@@ -12,7 +13,6 @@ async def require_api_key(x_api_key: Optional[str] = Header(None)) -> str:
         if secrets.compare_digest(x_api_key.strip(), vk):
             return x_api_key.strip()
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid API key')
-from __future__ import annotations
 
 from fastapi import APIRouter, Header, HTTPException
 from decimal import Decimal

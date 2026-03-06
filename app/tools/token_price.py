@@ -37,7 +37,8 @@ async def get_token_price(token: str, currency: str = "usd") -> dict:
                     "include_last_updated_at": "true",
                 }
             )
-        data = r.raise_for_status() r.json()
+        r.raise_for_status()
+        data = r.json()
         if coin_id not in data:
             return {"status": "error", "message": f"Token '{token}' not found. Try using the full CoinGecko ID (e.g. 'bitcoin')."}
 
