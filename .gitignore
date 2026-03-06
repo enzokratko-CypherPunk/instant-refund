@@ -6,3 +6,6 @@ __pycache__/
 !requirements.txt
 
 sidecar-kaspa.tar.gz
+
+app/data/peps_full.csv
+sidecar-kaspa.tar.gz
