@@ -1,7 +1,7 @@
+from app.core.config import SIGNER_SHARED_SECRET, SIGNER_URL
 import os
 from fastapi import FastAPI, Header, HTTPException
 
-SIGNER_SHARED_SECRET = "DEBUG_SHARED_SECRET_DO_NOT_KEEP"
 if not SIGNER_SHARED_SECRET:
     raise RuntimeError("Signer shared secret not configured")
 

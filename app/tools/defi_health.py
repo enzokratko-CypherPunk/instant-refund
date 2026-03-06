@@ -1,4 +1,4 @@
-﻿import httpx
+import httpx
 from typing import Dict, Any
 
 PROTOCOLS = {
@@ -47,7 +47,7 @@ async def check_defi_health(protocol: str) -> Dict[str, Any]:
             r = await client.get(
                 f"https://api.llama.fi/protocol/{proto['slug']}"
             )
-        data = r.json()
+        data = r.raise_for_status() r.json()
         
         tvl = data.get("currentChainTvls", {})
         total_tvl = data.get("tvl", [{}])

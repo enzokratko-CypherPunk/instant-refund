@@ -1,0 +1,122 @@
+```json
+{
+  "title": "Sanctions Checker API",
+  "short": "Real-time OFAC SDN list screening with fuzzy matching for names and entities",
+  "long": "The Sanctions Checker API enables compliance teams to instantly screen individuals and entities against the OFAC Specially Designated Nationals (SDN) list. Using advanced fuzzy matching algorithms, it identifies potential matches even with name variations, misspellings, and transliterations. Returns confidence scores and detailed match information for risk assessment and regulatory reporting.",
+  "tags": [
+    "compliance",
+    "aml",
+    "ofac",
+    "sanctions-screening",
+    "kyc",
+    "regulatory",
+    "fintech",
+    "risk-management",
+    "due-diligence"
+  ],
+  "ex_request": {
+    "method": "GET",
+    "url": "https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/sanctions/Vladmir%20Putin",
+    "headers": {
+      "Authorization": "Bearer YOUR_API_KEY",
+      "Content-Type": "application/json"
+    }
+  },
+  "ex_response": {
+    "match": true,
+    "score": 0.94,
+    "matches": [
+      {
+        "name": "PUTIN, Vladimir Vladimirovich",
+        "entity_type": "Individual",
+        "list": "SDN",
+        "program": "RUSSIA",
+        "similarity": 0.94
+      }
+    ]
+  },
+  "pricing": {
+    "model": "pay-as-you-go",
+    "tiers": [
+      {
+        "name": "Starter",
+        "checks_per_month": 1000,
+        "price_usd": 29
+      },
+      {
+        "name": "Professional",
+        "checks_per_month": 50000,
+        "price_usd": 199
+      },
+      {
+        "name": "Enterprise",
+        "checks_per_month": "unlimited",
+        "price_usd": "custom"
+      }
+    ]
+  },
+  "apify_what": "Sanctions Checker API screens names and entities in real-time against the OFAC SDN list using fuzzy matching to catch potential sanctions matches with confidence scoring.",
+  "mcp_name": "Kratko Sanctions Checker",
+  "apify_prompt": "Check if a person or entity is on the OFAC sanctions list. Provide the match status, confidence score, and detailed information about any matches found.",
+  "apify_notes": "Returns boolean match indicator, similarity score (0-1), and array of matching records with entity details and program affiliations. Handles name variations and transliterations automatically.",
+  "seo_headline": "OFAC Sanctions Screening API | Real-Time Compliance Screening for AML/KYC",
+  "seo_summary": "Instantly screen individuals and entities against the OFAC SDN list with fuzzy matching. Reduce compliance risk, automate due diligence, and meet regulatory requirements with high-accuracy sanctions screening.",
+  "seo_use_cases": [
+    "Customer onboarding and KYC verification to catch sanctioned individuals before account opening",
+    "Transaction monitoring and payment screening to block prohibited transfers in real-time",
+    "Recurring compliance checks for existing customers and business relationships",
+    "Third-party vendor due diligence and supplier risk assessment",
+    "Cross-border payment gateway integration for sanctions compliance",
+    "Employee and contractor background screening for regulated industries"
+  ],
+  "seo_api_example": "GET /v1/tools/sanctions/John%20Smith returns {\"match\": false, \"score\": 0.12, \"matches\": []}. For flagged matches: {\"match\": true, \"score\": 0.92, \"matches\": [{\"name\": \"SMITH, John Michael\", \"entity_type\": \"Individual\", \"program\": \"SDN\"}]}",
+  "seo_faqs": [
+    {
+      "question": "What is the OFAC SDN list?",
+      "answer": "The OFAC Specially Designated Nationals (SDN) list is maintained by the U.S. Treasury Department's Office of Foreign Assets Control. It identifies individuals and entities with whom U.S. persons and entities are prohibited from conducting business."
+    },
+    {
+      "question": "How does fuzzy matching work?",
+      "answer": "Fuzzy matching uses algorithms to identify close matches despite variations in spelling, transliteration, nicknames, and name order. A score of 0.8+ typically indicates a probable match requiring manual review."
+    },
+    {
+      "question": "What data is included in match results?",
+      "answer": "Results include entity name, type (individual/organization), OFAC program designation, list date, and similarity score. Use this for risk assessment and regulatory documentation."
+    },
+    {
+      "question": "How fresh is the sanctions data?",
+      "answer": "The OFAC SDN list is updated daily. Our API syncs with official sources weekly to ensure compliance accuracy while maintaining API performance."
+    },
+    {
+      "question": "Is this API compliant with banking regulations?",
+      "answer": "Yes, the Sanctions Checker API meets AML/CFT requirements under FinCEN guidance and supports regulatory reporting for BSA/AML programs and sanctions compliance audits."
+    },
+    {
+      "question": "Can I integrate this into payment systems?",
+      "answer": "Yes, the API is designed for real-time integration into payment gateways, wallet services, and transaction monitoring systems with sub-second response times."
+    }
+  ],
+  "seo_keywords": [
+    "ofac api",
+    "sanctions check api",
+    "sdn list api",
+    "aml screening api",
+    "kyc compliance api",
+    "sanctions screening",
+    "ofac sanctions list",
+    "entity screening api",
+    "compliance screening api",
+    "aml api",
+    "sanctions database api",
+    "ofac screening",
+    "fintech compliance api",
+    "name screening api",
+    "risk screening api",
+    "sanctions match",
+    "compliance check api",
+    "regulatory screening",
+    "sanctions compliance",
+    "treasury sanctions api"
+  ]
+}
+```

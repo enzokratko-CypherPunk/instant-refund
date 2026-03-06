@@ -1,0 +1,88 @@
+```json
+{
+  "title": "PEP Screener API",
+  "short": "Real-time politically exposed persons screening for KYC/AML compliance workflows",
+  "long": "PEP Screener API enables fintech, banking, and compliance teams to instantly verify individuals against politically exposed persons databases. Returns PEP status and risk classification to automate customer due diligence and regulatory screening requirements.",
+  "tags": [
+    "compliance",
+    "kyc",
+    "aml",
+    "pep-screening",
+    "due-diligence",
+    "regulatory",
+    "fintech"
+  ],
+  "ex_request": {
+    "method": "GET",
+    "url": "https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/pep/Jane%20Doe",
+    "headers": {
+      "Accept": "application/json"
+    }
+  },
+  "ex_response": {
+    "is_pep": false,
+    "risk_level": "low",
+    "name": "Jane Doe",
+    "timestamp": "2024-01-15T10:30:00Z"
+  },
+  "pricing": {
+    "model": "pay-as-you-go",
+    "currency": "USD",
+    "per_request": 0.05,
+    "monthly_minimum": null,
+    "free_tier": "100 requests/month"
+  },
+  "apify_what": "PEP screening against global politically exposed persons databases",
+  "mcp_name": "pep_screener",
+  "apify_prompt": "Screen the following name against PEP databases and return risk classification",
+  "apify_notes": "Single name input, no pagination. Returns boolean PEP status and risk_level enum (low/medium/high/critical)",
+  "seo_headline": "PEP Screening API for Instant KYC Compliance Checks",
+  "seo_summary": "Automate politically exposed person screening with real-time API. Integrate PEP checks into customer onboarding, transaction monitoring, and due diligence workflows. Reduce compliance risk and manual review overhead.",
+  "seo_use_cases": [
+    "Customer onboarding PEP verification in fintech platforms",
+    "Real-time transaction screening for AML compliance",
+    "Batch PEP screening during account creation and periodic reviews",
+    "Risk assessment and portfolio monitoring for wealth management firms",
+    "Regulatory reporting automation for banking institutions"
+  ],
+  "seo_api_example": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/pep/John%20Smith' -H 'Accept: application/json'",
+  "seo_faqs": [
+    {
+      "q": "What is PEP screening and why is it required?",
+      "a": "PEP (Politically Exposed Person) screening identifies individuals in high-risk political positions. It's mandatory under KYC/AML regulations including FATF guidelines, EU 5th Directive, and FinCEN rules to mitigate corruption and money laundering risks."
+    },
+    {
+      "q": "What databases does the PEP Screener API check?",
+      "a": "The API screens against international PEP databases including government sanctions lists, politically exposed persons registries, and adverse media sources from OECD, UN, and regional financial intelligence units."
+    },
+    {
+      "q": "How quickly does the API return results?",
+      "a": "Results are returned in <500ms with 99.9% uptime SLA, enabling real-time screening during customer onboarding and transaction processing."
+    },
+    {
+      "q": "Can I screen multiple names in bulk?",
+      "a": "The current API endpoint screens single names via GET requests. For bulk screening, submit sequential requests or contact support for batch processing options."
+    },
+    {
+      "q": "What do the risk levels mean?",
+      "a": "low (non-PEP), medium (former official/family), high (active government official), critical (sanctioned/denied parties). Use risk_level to determine escalation workflows."
+    }
+  ],
+  "seo_keywords": [
+    "pep screening api",
+    "politically exposed person api",
+    "kyc pep check",
+    "aml screening api",
+    "pep database lookup",
+    "compliance screening api",
+    "due diligence api",
+    "politically exposed persons database",
+    "pep verification",
+    "kyc aml api",
+    "fintech compliance api",
+    "real-time pep screening",
+    "sanctions screening api",
+    "customer screening api"
+  ]
+}
+```

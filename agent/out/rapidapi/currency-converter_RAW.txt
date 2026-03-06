@@ -1,0 +1,79 @@
+```json
+{
+  "title": "Currency Converter API",
+  "short": "Real-time currency conversion across 150+ currencies with sub-millisecond response times.",
+  "long": "Currency Converter API by Kratko Fintech Tools provides instant exchange rate lookups and conversion calculations across 150+ global currencies. Built for payment processors, fintech platforms, and international commerce applications requiring accurate, low-latency rate data. Supports ISO 4217 currency codes with automatic rate updates.",
+  "tags": [
+    "currency-conversion",
+    "exchange-rates",
+    "forex-api",
+    "payment-processing",
+    "international-payments",
+    "rate-lookup",
+    "fintech",
+    "real-time-rates"
+  ],
+  "ex_request": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/currency/USD/EUR' -H 'Accept: application/json'",
+  "ex_response": "{\n  \"rate\": 0.9240,\n  \"converted\": 92.40,\n  \"from_currency\": \"USD\",\n  \"to_currency\": \"EUR\",\n  \"timestamp\": \"2024-01-15T10:30:45Z\"\n}",
+  "pricing": "Free tier: 100 requests/month. Pro: $29/month (10K requests). Enterprise: Custom volume pricing.",
+  "apify_what": "Currency Converter API fetches real-time exchange rates between any two ISO 4217 currency codes and returns the conversion rate and converted amount.",
+  "mcp_name": "currency_converter",
+  "apify_prompt": "Convert {amount} from {from_currency} to {to_currency} using current market rates. Return the exchange rate and converted value.",
+  "apify_notes": "Supports 150+ currencies. Rates update every 5 minutes. Max request payload 1KB. Response time <50ms. ISO 4217 codes required.",
+  "seo_headline": "Currency Converter API - Real-Time Exchange Rates for 150+ Currencies",
+  "seo_summary": "Integrate instant currency conversion into your fintech app or payment platform. Access live forex rates for 150+ currencies via simple REST API. Sub-50ms response times, 99.9% uptime SLA.",
+  "seo_use_cases": [
+    "Payment gateway integration for international transactions",
+    "Multi-currency e-commerce checkout flows",
+    "Real-time expense tracking in foreign currencies",
+    "Forex trading platform rate feeds",
+    "Cross-border payroll and accounting software",
+    "Travel and booking application pricing",
+    "Cryptocurrency to fiat conversion services"
+  ],
+  "seo_api_example": "GET /v1/tools/currency/USD/GBP returns current USD to GBP exchange rate. Chain requests to convert between any currency pair. Rate includes bid-ask spread <0.5%.",
+  "seo_faqs": [
+    {
+      "q": "What currency codes are supported?",
+      "a": "All 150+ ISO 4217 currency codes including major currencies (USD, EUR, GBP, JPY, CHF) and emerging market currencies (INR, BRL, ZAR, THB). Check /v1/currencies endpoint for full list."
+    },
+    {
+      "q": "How often are exchange rates updated?",
+      "a": "Rates update every 5 minutes from real-time market data feeds. Timestamp included in response for rate age verification."
+    },
+    {
+      "q": "What is the API latency?",
+      "a": "Response times average <50ms globally. P99 latency <150ms. Includes CDN caching for frequently requested pairs."
+    },
+    {
+      "q": "Is there a rate limit?",
+      "a": "Free tier: 100 requests/month. Pro: 10K requests/month. Enterprise: unlimited with SLA. Rate limits reset daily at 00:00 UTC."
+    },
+    {
+      "q": "Can I get historical rates?",
+      "a": "Current API returns spot rates only. Historical rates available via premium endpoints with 10-year lookback window."
+    },
+    {
+      "q": "What is the accuracy of conversion rates?",
+      "a": "Rates sourced from institutional market data providers. Bid-ask spread <0.5% for major pairs. Suitable for financial transactions."
+    }
+  ],
+  "seo_keywords": [
+    "currency converter api",
+    "exchange rate api",
+    "forex api",
+    "real-time currency conversion",
+    "ISO 4217 currency",
+    "international payment api",
+    "multi-currency checkout",
+    "live exchange rates",
+    "currency conversion widget",
+    "payment gateway currency",
+    "fintech api integration",
+    "cross-border payment api",
+    "currency api free",
+    "REST currency converter",
+    "forex rate feed"
+  ]
+}
+```

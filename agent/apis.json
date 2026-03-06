@@ -1,0 +1,598 @@
+{
+  "brand": "Kratko Fintech Tools",
+  "base_url": "https://instant-refund-api-l99qr.ondigitalocean.app",
+  "tools": [
+    {
+      "slug": "bin-lookup",
+      "name": "BIN Lookup API",
+      "vertical": "payments",
+      "method": "GET",
+      "path": "/v1/tools/bin/{bin_code}",
+      "one_liner": "Identify issuer bank, network, card type, and country from the first 6-8 digits.",
+      "inputs": [
+        {
+          "name": "bin_code",
+          "type": "string",
+          "required": true,
+          "example": "411111"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bank",
+          "type": "string"
+        },
+        {
+          "name": "network",
+          "type": "string"
+        },
+        {
+          "name": "card_type",
+          "type": "string"
+        },
+        {
+          "name": "country",
+          "type": "string"
+        }
+      ],
+      "keywords_seed": [
+        "bin lookup api",
+        "credit card bin api",
+        "issuer lookup",
+        "card metadata api"
+      ]
+    },
+    {
+      "slug": "mcc-lookup",
+      "name": "MCC Lookup API",
+      "vertical": "payments",
+      "method": "GET",
+      "path": "/v1/tools/mcc/{mcc_code}",
+      "one_liner": "Decode any 4-digit Merchant Category Code into a human-readable category and description.",
+      "inputs": [
+        {
+          "name": "mcc_code",
+          "type": "string",
+          "required": true,
+          "example": "5411"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "string"
+        }
+      ],
+      "keywords_seed": [
+        "mcc lookup api",
+        "merchant category code api",
+        "mcc decoder"
+      ]
+    },
+    {
+      "slug": "iban-validator",
+      "name": "IBAN Validator API",
+      "vertical": "intl_payments",
+      "method": "GET",
+      "path": "/v1/tools/iban/{iban_code}",
+      "one_liner": "Validate IBAN checksum and parse country, bank, and account components.",
+      "inputs": [
+        {
+          "name": "iban_code",
+          "type": "string",
+          "required": true,
+          "example": "GB82WEST12345698765432"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "valid",
+          "type": "boolean"
+        },
+        {
+          "name": "country",
+          "type": "string"
+        },
+        {
+          "name": "bank_code",
+          "type": "string"
+        }
+      ],
+      "keywords_seed": [
+        "iban validation api",
+        "iban checker",
+        "sepa iban validate"
+      ]
+    },
+    {
+      "slug": "decline-code",
+      "name": "Decline Code Interpreter API",
+      "vertical": "payments",
+      "method": "GET",
+      "path": "/v1/tools/decline/{code}",
+      "one_liner": "Translate any payment decline code into plain-English meaning, category, and retry guidance.",
+      "inputs": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "example": "51"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "meaning",
+          "type": "string"
+        },
+        {
+          "name": "retryable",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "string"
+        }
+      ],
+      "keywords_seed": [
+        "decline code api",
+        "payment decline interpreter",
+        "card decline reason api"
+      ]
+    },
+    {
+      "slug": "swift-bic",
+      "name": "SWIFT BIC Lookup API",
+      "vertical": "intl_payments",
+      "method": "GET",
+      "path": "/v1/tools/swift/{swift_code}",
+      "one_liner": "Validate and decode any SWIFT/BIC code into bank name, country, city, and branch.",
+      "inputs": [
+        {
+          "name": "swift_code",
+          "type": "string",
+          "required": true,
+          "example": "CHASUS33"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bank_name",
+          "type": "string"
+        },
+        {
+          "name": "country",
+          "type": "string"
+        },
+        {
+          "name": "city",
+          "type": "string"
+        }
+      ],
+      "keywords_seed": [
+        "swift code lookup api",
+        "bic validator api",
+        "swift bic decoder"
+      ]
+    },
+    {
+      "slug": "currency-converter",
+      "name": "Currency Converter API",
+      "vertical": "intl_payments",
+      "method": "GET",
+      "path": "/v1/tools/currency/{from_currency}/{to_currency}",
+      "one_liner": "Real-time currency conversion across 150+ currencies.",
+      "inputs": [
+        {
+          "name": "from_currency",
+          "type": "string",
+          "required": true,
+          "example": "USD"
+        },
+        {
+          "name": "to_currency",
+          "type": "string",
+          "required": true,
+          "example": "EUR"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rate",
+          "type": "number"
+        },
+        {
+          "name": "converted",
+          "type": "number"
+        }
+      ],
+      "keywords_seed": [
+        "currency converter api",
+        "exchange rate api",
+        "forex api"
+      ]
+    },
+    {
+      "slug": "wallet-validator",
+      "name": "Crypto Wallet Address Validator API",
+      "vertical": "crypto",
+      "method": "GET",
+      "path": "/v1/tools/wallet/{address}",
+      "one_liner": "Validate crypto wallet addresses across 20+ blockchain networks including Bitcoin, Ethereum, Solana, and Kaspa.",
+      "inputs": [
+        {
+          "name": "address",
+          "type": "string",
+          "required": true,
+          "example": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "valid",
+          "type": "boolean"
+        },
+        {
+          "name": "chain",
+          "type": "string"
+        },
+        {
+          "name": "network",
+          "type": "string"
+        }
+      ],
+      "keywords_seed": [
+        "crypto wallet validator api",
+        "wallet address validation",
+        "blockchain address checker"
+      ]
+    },
+    {
+      "slug": "sanctions-checker",
+      "name": "Sanctions Checker API",
+      "vertical": "compliance",
+      "method": "GET",
+      "path": "/v1/tools/sanctions/{name}",
+      "one_liner": "Screen names and entities against the OFAC SDN list with fuzzy matching.",
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "example": "John Smith"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "match",
+          "type": "boolean"
+        },
+        {
+          "name": "score",
+          "type": "number"
+        },
+        {
+          "name": "matches",
+          "type": "array"
+        }
+      ],
+      "keywords_seed": [
+        "ofac sanctions api",
+        "sanctions screening api",
+        "aml check api"
+      ]
+    },
+    {
+      "slug": "pep-screener",
+      "name": "PEP Screener API",
+      "vertical": "compliance",
+      "method": "GET",
+      "path": "/v1/tools/pep/{name}",
+      "one_liner": "Screen individuals against politically exposed persons databases for KYC/AML compliance.",
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "example": "Jane Doe"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "is_pep",
+          "type": "boolean"
+        },
+        {
+          "name": "risk_level",
+          "type": "string"
+        }
+      ],
+      "keywords_seed": [
+        "pep screening api",
+        "politically exposed person api",
+        "kyc pep check"
+      ]
+    },
+    {
+      "slug": "routing-number",
+      "name": "Routing Number Validator API",
+      "vertical": "payments",
+      "method": "GET",
+      "path": "/v1/tools/routing/{routing_number}",
+      "one_liner": "Validate US ABA routing numbers and identify the issuing bank and Federal Reserve district.",
+      "inputs": [
+        {
+          "name": "routing_number",
+          "type": "string",
+          "required": true,
+          "example": "021000021"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "valid",
+          "type": "boolean"
+        },
+        {
+          "name": "bank_name",
+          "type": "string"
+        },
+        {
+          "name": "fed_district",
+          "type": "string"
+        }
+      ],
+      "keywords_seed": [
+        "routing number validator api",
+        "aba routing number lookup",
+        "bank routing number api"
+      ]
+    },
+    {
+      "slug": "iso-8583-parser",
+      "name": "ISO 8583 Parser API",
+      "vertical": "payments",
+      "method": "GET",
+      "path": "/v1/tools/iso8583/{message}",
+      "one_liner": "Parse raw ISO 8583 financial transaction messages into structured JSON with human-readable field enrichment.",
+      "inputs": [
+        {
+          "name": "message",
+          "type": "string",
+          "required": true,
+          "example": "0100"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mti",
+          "type": "string"
+        },
+        {
+          "name": "fields",
+          "type": "object"
+        }
+      ],
+      "keywords_seed": [
+        "iso 8583 parser api",
+        "payment message parser",
+        "iso8583 decoder"
+      ]
+    },
+    {
+      "slug": "card-fraud-score",
+      "name": "Card Fraud Score API",
+      "vertical": "payments",
+      "method": "GET",
+      "path": "/v1/tools/fraud-score",
+      "one_liner": "Score payment card fraud risk based on card type, network, issuing country, and card attributes.",
+      "inputs": [
+        {
+          "name": "card_type",
+          "type": "string",
+          "required": false,
+          "example": "prepaid"
+        },
+        {
+          "name": "network",
+          "type": "string",
+          "required": false,
+          "example": "Visa"
+        },
+        {
+          "name": "country_code",
+          "type": "string",
+          "required": false,
+          "example": "US"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "fraud_score",
+          "type": "number"
+        },
+        {
+          "name": "risk_level",
+          "type": "string"
+        },
+        {
+          "name": "recommendation",
+          "type": "string"
+        }
+      ],
+      "keywords_seed": [
+        "card fraud score api",
+        "payment fraud risk api",
+        "card risk assessment"
+      ]
+    },
+    {
+      "slug": "token-price-feed",
+      "name": "Token Price Feed API",
+      "vertical": "crypto",
+      "method": "GET",
+      "path": "/v1/tools/token-price/{token}",
+      "one_liner": "Real-time cryptocurrency prices with 24h change, market cap, and volume for 25+ tokens.",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "string",
+          "required": true,
+          "example": "btc"
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "required": false,
+          "example": "usd"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "price",
+          "type": "number"
+        },
+        {
+          "name": "price_change_24h_pct",
+          "type": "number"
+        },
+        {
+          "name": "market_cap",
+          "type": "number"
+        }
+      ],
+      "keywords_seed": [
+        "crypto price api",
+        "token price feed",
+        "bitcoin price api"
+      ]
+    },
+    {
+      "slug": "ein-validator",
+      "name": "EIN Validator API",
+      "vertical": "compliance",
+      "method": "GET",
+      "path": "/v1/tools/ein/{ein}",
+      "one_liner": "Validate US Employer Identification Numbers against IRS prefix assignment rules.",
+      "inputs": [
+        {
+          "name": "ein",
+          "type": "string",
+          "required": true,
+          "example": "26-0000618"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "valid",
+          "type": "boolean"
+        },
+        {
+          "name": "issuing_campus",
+          "type": "string"
+        },
+        {
+          "name": "prefix",
+          "type": "string"
+        }
+      ],
+      "keywords_seed": [
+        "ein validator api",
+        "employer identification number api",
+        "business ein lookup"
+      ]
+    },
+    {
+      "slug": "defi-health-checker",
+      "name": "DeFi Health Checker API",
+      "vertical": "crypto",
+      "method": "GET",
+      "path": "/v1/tools/defi-health/{protocol}",
+      "one_liner": "Real-time DeFi protocol health monitoring \u2014 TVL, 24h change, and risk assessment for 15 major protocols.",
+      "inputs": [
+        {
+          "name": "protocol",
+          "type": "string",
+          "required": true,
+          "example": "aave"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "health_status",
+          "type": "string"
+        },
+        {
+          "name": "tvl_usd",
+          "type": "number"
+        },
+        {
+          "name": "risk_level",
+          "type": "string"
+        }
+      ],
+      "keywords_seed": [
+        "defi health api",
+        "protocol tvl api",
+        "defi risk assessment"
+      ]
+    },
+    {
+      "slug": "payment-intelligence",
+      "name": "Payment Intelligence API",
+      "vertical": "payments",
+      "method": "GET",
+      "path": "/v1/tools/payment-intelligence",
+      "one_liner": "Full-spectrum payment analysis \u2014 input BIN, decline code, MCC, and amount to get retry strategy, fraud risk, and plain-English recommendation.",
+      "inputs": [
+        {
+          "name": "card_bin",
+          "type": "string",
+          "required": false,
+          "example": "411111"
+        },
+        {
+          "name": "decline_code",
+          "type": "string",
+          "required": false,
+          "example": "51"
+        },
+        {
+          "name": "merchant_mcc",
+          "type": "string",
+          "required": false,
+          "example": "5411"
+        },
+        {
+          "name": "transaction_amount",
+          "type": "number",
+          "required": false,
+          "example": 250.0
+        }
+      ],
+      "outputs": [
+        {
+          "name": "recommendation",
+          "type": "string"
+        },
+        {
+          "name": "retry_probability_pct",
+          "type": "number"
+        },
+        {
+          "name": "fraud_score",
+          "type": "number"
+        }
+      ],
+      "keywords_seed": [
+        "payment intelligence api",
+        "transaction retry api",
+        "decline code analyzer",
+        "payment failure api"
+      ]
+    }
+  ]
+}

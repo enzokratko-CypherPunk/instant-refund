@@ -1,0 +1,60 @@
+```json
+{
+  "title": "MCC Lookup API",
+  "short": "Instantly decode 4-digit Merchant Category Codes into standardized categories and descriptions for payment processing, risk assessment, and merchant profiling.",
+  "long": "The MCC Lookup API provides real-time resolution of Merchant Category Codes (ISO 18245) into human-readable merchant categories and detailed descriptions. Essential for payments infrastructure, compliance systems, and merchant management platforms. Supports all 4-digit MCC codes used by card networks (Visa, Mastercard, Amex, Discover).",
+  "tags": ["payments", "mcc", "merchant-category-code", "iso-18245", "card-networks", "payment-processing", "risk-management", "compliance"],
+  "ex_request": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/mcc/5411'",
+  "ex_response": "{\n  \"mcc_code\": \"5411\",\n  \"category\": \"Supermarkets and Grocery Stores\",\n  \"description\": \"Retail establishments primarily engaged in selling a variety of food and household merchandise on a self-service basis\"\n}",
+  "pricing": "Free tier available. Contact sales for volume pricing.",
+  "apify_what": "Resolves merchant category codes to standardized payment taxonomy for transaction classification.",
+  "mcp_name": "MCC Lookup Tool",
+  "apify_prompt": "You are a merchant category code resolver. When given a 4-digit MCC code, return the official merchant category name and ISO 18245 description. Validate input is exactly 4 digits before processing.",
+  "apify_notes": "MCC codes are standardized by card networks. This tool provides ISO 18245 compliant mappings. Returns 400 for invalid codes.",
+  "seo_headline": "MCC Lookup API: Decode Merchant Category Codes in Real-Time",
+  "seo_summary": "Integrate merchant category code resolution into payment systems. MCC Lookup API decodes all 4-digit ISO 18245 codes for risk assessment, compliance reporting, and merchant profiling.",
+  "seo_use_cases": [
+    "Transaction risk scoring based on merchant category",
+    "Compliance reporting and transaction classification",
+    "Merchant onboarding and KYC validation",
+    "Chargeback defense and dispute resolution",
+    "Payment routing rules based on merchant type",
+    "Fraud detection category-based triggers"
+  ],
+  "seo_api_example": "GET https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/mcc/4111 → Returns \"Automated Fuel Dispensers\" category for credit card processing networks.",
+  "seo_faqs": [
+    {
+      "q": "What is an MCC code?",
+      "a": "Merchant Category Code (MCC) is a 4-digit standardized classification defined by ISO 18245 that identifies the merchant's primary business type. Used by payment networks for routing, compliance, and risk assessment."
+    },
+    {
+      "q": "Is this API compliant with payment networks?",
+      "a": "Yes. Uses official ISO 18245 codes recognized by Visa, Mastercard, American Express, and Discover."
+    },
+    {
+      "q": "Can I validate MCCs before submission?",
+      "a": "Yes. The API returns 400 errors for invalid codes. Use this for real-time MCC validation in onboarding flows."
+    },
+    {
+      "q": "What response time should I expect?",
+      "a": "Sub-50ms response times. Suitable for real-time transaction processing."
+    },
+    {
+      "q": "How many MCC codes are supported?",
+      "a": "All 6000+ MCC codes defined in the ISO 18245 standard."
+    }
+  ],
+  "seo_keywords": [
+    "mcc lookup api",
+    "merchant category code api",
+    "mcc decoder",
+    "iso 18245 mcc",
+    "4-digit merchant code",
+    "mcc validation",
+    "payment mcc database",
+    "merchant category lookup",
+    "mcc classification",
+    "card network mcc codes"
+  ]
+}
+```

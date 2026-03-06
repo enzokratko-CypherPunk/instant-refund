@@ -1,0 +1,81 @@
+```json
+{
+  "title": "Crypto Wallet Address Validator API",
+  "short": "Validate crypto wallet addresses across 20+ blockchain networks in real-time with format verification and chain detection.",
+  "long": "Kratko's Crypto Wallet Address Validator API provides instant validation for cryptocurrency wallet addresses across Bitcoin, Ethereum, Solana, Kaspa, and 16+ additional blockchain networks. Detects invalid formats, malformed addresses, and automatically identifies the blockchain network for each address. Perfect for exchanges, wallets, payment processors, and DeFi applications requiring robust address validation before transactions.",
+  "tags": [
+    "crypto",
+    "blockchain",
+    "wallet",
+    "validation",
+    "bitcoin",
+    "ethereum",
+    "solana",
+    "address-verification",
+    "payment-processing",
+    "compliance"
+  ],
+  "ex_request": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/wallet/0x742d35Cc6634C0532925a3b844Bc454e4438f44e'",
+  "ex_response": {
+    "valid": true,
+    "chain": "ethereum",
+    "network": "mainnet"
+  },
+  "pricing": "Free tier: 100 requests/day. Pro: $29/month (10,000 requests/day). Enterprise: Custom limits and support.",
+  "apify_what": "Validate cryptocurrency wallet addresses across multiple blockchain networks with automatic chain detection and format verification.",
+  "mcp_name": "wallet_validator",
+  "apify_prompt": "Use this API to validate wallet addresses before processing crypto transactions. Input any wallet address and receive validation status, blockchain network identification, and confirmation of address format correctness.",
+  "apify_notes": "Supports 20+ blockchains including BTC, ETH, SOL, KASPA. Returns boolean validity flag plus detected chain and network info. No rate limiting for integration testing. Consider caching results for repeated addresses.",
+  "seo_headline": "Validate Crypto Wallet Addresses Across 20+ Blockchains | Instant API",
+  "seo_summary": "Real-time cryptocurrency wallet address validation API. Verify Bitcoin, Ethereum, Solana, and Kaspa addresses instantly. Detect invalid formats, prevent transaction errors, and identify blockchain networks automatically.",
+  "seo_use_cases": [
+    "Cryptocurrency exchange deposit/withdrawal validation",
+    "Payment processor address verification before transactions",
+    "DeFi protocol address whitelisting and compliance",
+    "Wallet migration address format checking",
+    "Smart contract address validation for cross-chain bridges",
+    "KYC/AML address verification workflows",
+    "Automated transaction risk assessment"
+  ],
+  "seo_api_example": "POST request: POST https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/wallet/bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4\n\nResponse: {\"valid\": true, \"chain\": \"bitcoin\", \"network\": \"mainnet\"}\n\nValidation fails immediately for malformed addresses, returning {\"valid\": false}.",
+  "seo_faqs": [
+    {
+      "q": "Which blockchains does the validator support?",
+      "a": "Bitcoin, Ethereum, Solana, Kaspa, Polkadot, Cardano, XRP Ledger, Litecoin, Dogecoin, Monero, Zcash, Ripple, and 8+ additional networks."
+    },
+    {
+      "q": "Does it validate testnet addresses?",
+      "a": "Yes. The API identifies both mainnet and testnet addresses and returns the network type in response."
+    },
+    {
+      "q": "What happens if an address is invalid?",
+      "a": "Returns {\"valid\": false} immediately without chain/network fields. Useful for form validation and pre-transaction checks."
+    },
+    {
+      "q": "Can I batch validate multiple addresses?",
+      "a": "Current endpoint validates single addresses. Contact enterprise support for bulk validation endpoints."
+    },
+    {
+      "q": "Is there rate limiting?",
+      "a": "Free tier: 100 req/day. Pro: 10k req/day. Enterprise plans include higher limits and SLA support."
+    }
+  ],
+  "seo_keywords": [
+    "wallet address validator",
+    "crypto address validation api",
+    "blockchain address checker",
+    "bitcoin address validator",
+    "ethereum address validation",
+    "solana wallet validator",
+    "address format verification",
+    "cryptocurrency compliance",
+    "wallet address verification",
+    "blockchain address validation service",
+    "wallet validation api",
+    "address checksum verification",
+    "multi-chain address validator",
+    "payment processor address validation",
+    "defi address validation"
+  ]
+}
+```

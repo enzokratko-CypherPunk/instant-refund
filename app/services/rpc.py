@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import json
 import sys
 
@@ -14,20 +17,20 @@ def submit_transaction(hex_transaction: str):
     """
     # 1. Check for library
     if not requests:
-        print("CRITICAL ERROR: 'requests' library is not installed.", file=sys.stderr)
+        logger.info("CRITICAL ERROR: 'requests' library is not installed.", file=sys.stderr)
         return {"error": "Server Configuration Error: Missing 'requests' library"}
 
     # 2. Define Public Relay URL
     url = "https://api.kaspa.org/transactions"
     payload = {"transactionHex": hex_transaction}
     
-    print(f"--- [NEW CODE ACTIVE] BROADCASTING TO {url} ---", file=sys.stderr, flush=True)
+    logger.info(f"--- [NEW CODE ACTIVE] BROADCASTING TO {url} ---", file=sys.stderr, flush=True)
 
     try:
         # 3. Send Request (10s timeout)
         response = requests.post(url, json=payload, timeout=10)
         
-        print(f"--- RELAY STATUS: {response.status_code} ---", file=sys.stderr, flush=True)
+        logger.info(f"--- RELAY STATUS: {response.status_code} ---", file=sys.stderr, flush=True)
         
         if response.status_code == 200:
             # Success
@@ -35,9 +38,9 @@ def submit_transaction(hex_transaction: str):
             return {"result": tx_id}
         else:
             # Relay Rejected It
-            print(f"RELAY ERROR BODY: {response.text}", file=sys.stderr, flush=True)
+            logger.info(f"RELAY ERROR BODY: {response.text}", file=sys.stderr, flush=True)
             return {"error": f"Relay Rejected: {response.text}"}
 
     except Exception as e:
-        print(f"CONNECTION EXCEPTION: {str(e)}", file=sys.stderr, flush=True)
+        logger.info(f"CONNECTION EXCEPTION: {str(e)}", file=sys.stderr, flush=True)
         return {"error": f"Connection Failed: {str(e)}"}

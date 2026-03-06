@@ -1,4 +1,18 @@
 import os
+
+import sys
+
+_FORBIDDEN_SECRETS = {"dev_secret_key_change_me", "DEBUG_SHARED_SECRET_DO_NOT_KEEP", "secret", "changeme", "password", ""}
+
+def _require_env(name: str, *, secret: bool = False) -> str:
+    value = os.environ.get(name, "").strip()
+    if not value:
+        print(f"STARTUP FAILED: Required env var '{name}' is not set.", file=sys.stderr)
+        sys.exit(1)
+    if secret and value.lower() in _FORBIDDEN_SECRETS:
+        print(f"STARTUP FAILED: '{name}' contains a known-weak placeholder.", file=sys.stderr)
+        sys.exit(1)
+    return value
 from pydantic import BaseSettings
 
 class Settings(BaseSettings):
@@ -7,7 +21,7 @@ class Settings(BaseSettings):
     SIGNER_URL: str = os.getenv("SIGNER_URL", "http://instant-refund-signer:8080/sign")
     
     # SWITCHING TO PUBLIC IP (The Front Door)
-    KASPAD_ADDRESS: str = "159.203.168.9" 
+    KASPAD_ADDRESS: str = _require_env("KASPAD_ADDRESS") 
     KASPAD_PORT: int = 16110
 
 settings = Settings()

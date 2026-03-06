@@ -1,0 +1,103 @@
+```json
+{
+  "title": "DeFi Health Checker API",
+  "short": "Real-time DeFi protocol health monitoring with TVL, 24h changes, and risk assessment for 15+ major protocols.",
+  "long": "The DeFi Health Checker API provides instant access to real-time health metrics for major DeFi protocols including Aave, Curve, Lido, and more. Monitor total value locked (TVL), 24-hour changes, and automated risk level assessments. Perfect for portfolio dashboards, risk management systems, and protocol analytics platforms.",
+  "tags": [
+    "defi",
+    "blockchain",
+    "risk-assessment",
+    "tvl-monitoring",
+    "protocol-analytics",
+    "crypto-api",
+    "real-time-data"
+  ],
+  "ex_request": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/defi-health/aave' -H 'Authorization: Bearer YOUR_API_KEY'",
+  "ex_response": {
+    "protocol": "aave",
+    "health_status": "healthy",
+    "tvl_usd": 8500000000,
+    "tvl_24h_change": 2.34,
+    "risk_level": "low",
+    "last_updated": "2024-01-15T14:32:00Z",
+    "supported_chains": [
+      "ethereum",
+      "polygon",
+      "arbitrum"
+    ]
+  },
+  "pricing": {
+    "model": "pay-as-you-go",
+    "free_tier": "100 requests/month",
+    "pro_tier": "$29/month - 50k requests/month",
+    "enterprise": "custom"
+  },
+  "apify_what": "Monitors real-time health metrics for 15+ DeFi protocols with TVL data, risk assessment, and 24h change tracking.",
+  "mcp_name": "defi-health-monitor",
+  "apify_prompt": "Check the health status and risk level of a DeFi protocol by querying the DeFi Health Checker API. Returns TVL, 24h changes, and automated risk assessment.",
+  "apify_notes": "Supports: Aave, Curve, Lido, MakerDAO, Uniswap, Compound, Convex, Yearn, Balancer, dYdX, Synthetix, Olympus, Arbitrum, Optimism, Polygon protocols.",
+  "seo_headline": "DeFi Protocol Health Monitoring API | Real-Time TVL & Risk Assessment",
+  "seo_summary": "Get real-time DeFi protocol health data including TVL, 24-hour changes, and risk levels for 15+ major protocols. Monitor Aave, Curve, Lido, and more with instant API access.",
+  "seo_use_cases": [
+    "Portfolio risk monitoring dashboards",
+    "Automated protocol health alerts",
+    "DeFi analytics and reporting platforms",
+    "Smart contract risk assessment tools",
+    "Yield farming optimization systems",
+    "Liquidity management platforms",
+    "DeFi protocol comparison tools"
+  ],
+  "seo_api_example": {
+    "endpoint": "GET /v1/tools/defi-health/{protocol}",
+    "params": {
+      "protocol": "aave"
+    },
+    "response_fields": [
+      "health_status - Protocol operational status (healthy, warning, critical)",
+      "tvl_usd - Total value locked in USD",
+      "tvl_24h_change - 24-hour TVL percentage change",
+      "risk_level - Automated risk assessment (low, medium, high)",
+      "last_updated - Timestamp of latest data point"
+    ]
+  },
+  "seo_faqs": [
+    {
+      "question": "Which DeFi protocols are supported?",
+      "answer": "15+ major protocols including Aave, Curve, Lido, MakerDAO, Uniswap, Compound, Convex, Yearn, Balancer, dYdX, Synthetix, Olympus, and multi-chain instances (Ethereum, Polygon, Arbitrum, Optimism)."
+    },
+    {
+      "question": "How often is health data updated?",
+      "answer": "Real-time updates every 2-5 minutes. Timestamp provided in each response for verification."
+    },
+    {
+      "question": "What does risk_level indicate?",
+      "answer": "Automated assessment based on TVL volatility, smart contract audit status, governance concentration, and historical incidents. Levels: low, medium, high."
+    },
+    {
+      "question": "Can I track historical TVL changes?",
+      "answer": "Current API returns 24h changes. Extended historical data available in enterprise tier with custom time ranges."
+    },
+    {
+      "question": "Is authentication required?",
+      "answer": "Yes, Bearer token authentication required. Free tier includes 100 requests/month."
+    }
+  ],
+  "seo_keywords": [
+    "defi health api",
+    "protocol tvl api",
+    "defi risk assessment",
+    "cryptocurrency protocol monitoring",
+    "aave api",
+    "tvl tracker api",
+    "defi analytics",
+    "smart contract risk api",
+    "blockchain protocol health",
+    "defi protocol data",
+    "real-time tvl monitoring",
+    "defi risk management api",
+    "protocol metrics api",
+    "cryptocurrency tvl tracking",
+    "defi dashboard api"
+  ]
+}
+```

@@ -1,0 +1,66 @@
+```json
+{
+  "title": "Token Price Feed API",
+  "short": "Real-time cryptocurrency price data for 25+ tokens with 24h analytics and market metrics.",
+  "long": "Token Price Feed API delivers real-time cryptocurrency prices with 24-hour percentage change, market capitalization, and trading volume. Built for fintech applications, trading bots, and portfolio dashboards. Supports 25+ major tokens (BTC, ETH, SOL, etc.) with multi-currency conversion (USD, EUR, GBP, and more). Sub-second response times with 99.9% uptime SLA.",
+  "tags": ["crypto", "price-feed", "market-data", "bitcoin", "ethereum", "real-time", "token-prices", "market-cap", "volume", "24h-change"],
+  "ex_request": "GET https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/token-price/btc?currency=usd",
+  "ex_response": "{\"price\": 42350.75, \"price_change_24h_pct\": 2.43, \"market_cap\": 830000000000, \"volume_24h\": 28500000000, \"timestamp\": \"2024-01-15T14:32:00Z\"}",
+  "pricing": "Freemium: 100 requests/day free tier. Pro: $29/month (10,000 req/day). Enterprise: custom limits.",
+  "apify_what": "Fetches live cryptocurrency prices, 24h percentage changes, market cap, and volume for 25+ tokens via REST API.",
+  "mcp_name": "token_price_feed",
+  "apify_prompt": "Get the current price of {token} in {currency} and return the 24-hour change percentage and market capitalization.",
+  "apify_notes": "Supports lowercase token symbols (btc, eth, sol). Default currency is USD. Returns null for unsupported tokens.",
+  "seo_headline": "Real-Time Crypto Price Feed API | 25+ Tokens, Sub-Second Response",
+  "seo_summary": "Access real-time cryptocurrency prices with 24h analytics, market cap, and volume. REST API with multi-currency support (USD, EUR, GBP). Built for trading platforms, portfolio apps, and fintech integrations.",
+  "seo_use_cases": [
+    "Trading bots and algorithmic trading systems",
+    "Cryptocurrency portfolio dashboards",
+    "Price alert and notification services",
+    "Financial analytics and reporting platforms",
+    "DeFi aggregators and yield farming dashboards",
+    "Crypto payment processors",
+    "Investment tracking applications"
+  ],
+  "seo_api_example": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/token-price/eth?currency=usd' -H 'Authorization: Bearer YOUR_API_KEY'",
+  "seo_faqs": [
+    {
+      "q": "What cryptocurrencies are supported?",
+      "a": "25+ major tokens including BTC, ETH, SOL, ADA, XRP, DOGE, MATIC, AVAX, and more. Full list available in documentation."
+    },
+    {
+      "q": "How often is price data updated?",
+      "a": "Real-time updates with sub-second latency. Data sourced from multiple exchanges and aggregated for accuracy."
+    },
+    {
+      "q": "Which currencies are supported?",
+      "a": "Major fiat currencies: USD, EUR, GBP, JPY, CHF, AUD, CAD. Additional currencies available on enterprise plans."
+    },
+    {
+      "q": "What is the API rate limit?",
+      "a": "Free tier: 100 requests/day. Pro: 10,000 requests/day. Enterprise plans offer custom limits."
+    },
+    {
+      "q": "Does the API include historical data?",
+      "a": "Current version returns real-time and 24h metrics. Historical data available via Premium+ tier."
+    }
+  ],
+  "seo_keywords": [
+    "crypto price api",
+    "bitcoin price feed",
+    "ethereum price api",
+    "token price data",
+    "cryptocurrency api",
+    "real-time crypto prices",
+    "market data api",
+    "crypto market cap api",
+    "token volume api",
+    "price change api",
+    "24h change cryptocurrency",
+    "trading api crypto",
+    "fintech price feed",
+    "defi price oracle",
+    "coin price aggregator"
+  ]
+}
+```

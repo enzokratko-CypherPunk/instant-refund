@@ -1,0 +1,88 @@
+```json
+{
+  "title": "BIN Lookup API",
+  "short": "Identify issuer bank, network, card type, and country from BIN codes in real-time.",
+  "long": "BIN Lookup API resolves the first 6-8 digits of payment cards to retrieve issuer bank details, card network, card type (credit/debit), and issuing country. Essential for payment processors, fraud detection systems, and fintech platforms requiring card metadata validation.",
+  "tags": [
+    "payments",
+    "card-data",
+    "bin-lookup",
+    "issuer-identification",
+    "fraud-prevention",
+    "payment-processing",
+    "card-metadata"
+  ],
+  "ex_request": {
+    "method": "GET",
+    "url": "https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/bin/411111",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "ex_response": {
+    "bin_code": "411111",
+    "bank": "Chase Bank",
+    "network": "Visa",
+    "card_type": "Credit",
+    "country": "US"
+  },
+  "pricing": {
+    "model": "pay-as-you-go",
+    "note": "Contact Kratko Fintech Tools for volume pricing"
+  },
+  "apify_what": "Instant BIN code resolution returning issuer bank, payment network, card classification, and country of origin.",
+  "mcp_name": "bin_lookup",
+  "apify_prompt": "Call the BIN Lookup API to identify card issuer details from a 6-8 digit BIN code. Provide the BIN code as input and receive bank name, network type, card classification, and country.",
+  "apify_notes": "Rate limit: 1000 requests/minute. Returns cached data for optimal performance. Supports international BIN ranges.",
+  "seo_headline": "Real-Time BIN Lookup API | Card Issuer Identification & Metadata",
+  "seo_summary": "Instantly identify payment card details from BIN codes. Get issuer bank, card network (Visa, Mastercard, Amex), card type (credit/debit), and country in milliseconds. Integrate BIN lookup into payment processing, fraud detection, and compliance workflows.",
+  "seo_use_cases": [
+    "Payment gateway fraud detection and card validation",
+    "Issuer bank identification for transaction routing",
+    "PCI-DSS compliant card metadata enrichment",
+    "Chargeback and dispute analysis",
+    "Geographic payment restrictions and risk assessment",
+    "Card network reconciliation and reporting",
+    "KYC/AML payment source validation"
+  ],
+  "seo_api_example": "GET /v1/tools/bin/411111 → {\"bank\": \"Chase Bank\", \"network\": \"Visa\", \"card_type\": \"Credit\", \"country\": \"US\"}",
+  "seo_faqs": [
+    {
+      "q": "What is a BIN code and why lookup?",
+      "a": "BIN (Bank Identification Number) are the first 6-8 digits of payment cards. Lookup identifies the issuer bank, card network, and card type for fraud prevention, routing, and compliance."
+    },
+    {
+      "q": "Which card networks are supported?",
+      "a": "Visa, Mastercard, American Express, Discover, Diners Club, and regional networks. Coverage includes 200+ issuing banks globally."
+    },
+    {
+      "q": "Is BIN lookup PCI-DSS compliant?",
+      "a": "Yes. BIN lookup uses only non-sensitive card data (first 6-8 digits) and does not store full card numbers, qualifying as PCI-DSS safe."
+    },
+    {
+      "q": "What's the response latency?",
+      "a": "Sub-50ms average response time with cached BIN databases. Suitable for real-time payment authorization flows."
+    },
+    {
+      "q": "Can I use BIN lookup for card validation?",
+      "a": "BIN lookup confirms card network and issuer type but does not validate card authenticity or balance. Combine with tokenization or 3D Secure for full validation."
+    }
+  ],
+  "seo_keywords": [
+    "bin lookup api",
+    "credit card bin api",
+    "bank identification number lookup",
+    "issuer identification number",
+    "card network api",
+    "card metadata api",
+    "payment card validation",
+    "bin database api",
+    "fraud detection card",
+    "issuer lookup service",
+    "card type detection",
+    "visa mastercard amex api",
+    "payment processor bin",
+    "card issuer api"
+  ]
+}
+```

@@ -1,0 +1,80 @@
+```json
+{
+  "title": "SWIFT BIC Lookup API",
+  "short": "Validate and decode SWIFT/BIC codes to bank details instantly",
+  "long": "Enterprise-grade SWIFT/BIC code validator and decoder. Returns bank name, country, city, and branch information in real-time. Essential for international payment processing, wire transfers, and compliance workflows.",
+  "tags": [
+    "swift-code",
+    "bic-validation",
+    "banking-api",
+    "international-payments",
+    "fintech",
+    "payment-processing"
+  ],
+  "ex_request": "GET https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/swift/CHASUS33",
+  "ex_response": {
+    "swift_code": "CHASUS33",
+    "bank_name": "JP Morgan Chase Bank",
+    "country": "US",
+    "city": "New York",
+    "branch": "New York",
+    "valid": true
+  },
+  "pricing": "Free tier available. Enterprise licensing available.",
+  "apify_what": "SWIFT/BIC code lookup service for international banking infrastructure",
+  "mcp_name": "swift_bic_lookup",
+  "apify_prompt": "You are a SWIFT/BIC validation assistant. When given a SWIFT or BIC code, validate its format and return the associated bank name, country, city, and branch information. Handle 8-digit and 11-digit SWIFT codes. Reject invalid formats.",
+  "apify_notes": "Supports both 8-character (bank code) and 11-character (branch-specific) SWIFT codes. Covers 200+ countries and 15,000+ financial institutions.",
+  "seo_headline": "SWIFT BIC Code Lookup API | Instant Bank Validation for International Transfers",
+  "seo_summary": "Real-time SWIFT/BIC code validator for payment processors, remittance platforms, and fintech applications. Decode any international bank code to bank name, country, city, and branch in milliseconds. ISO 9362 compliant.",
+  "seo_use_cases": [
+    "Wire transfer validation in payment gateways",
+    "Cross-border remittance processing",
+    "IBAN/SWIFT verification for compliance",
+    "International settlement systems",
+    "Banking infrastructure lookups",
+    "KYC/AML enrichment workflows",
+    "Payment routing optimization"
+  ],
+  "seo_api_example": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/swift/DEUTDEDBBER' -H 'Authorization: Bearer YOUR_API_KEY'\n\nResponse:\n{\n  \"swift_code\": \"DEUTDEDBBER\",\n  \"bank_name\": \"Deutsche Bank\",\n  \"country\": \"DE\",\n  \"city\": \"Berlin\",\n  \"branch\": \"Berlin\",\n  \"valid\": true\n}",
+  "seo_faqs": [
+    {
+      "q": "What's the difference between SWIFT code and BIC code?",
+      "a": "SWIFT and BIC are synonymous terms. BIC stands for Bank Identifier Code, and SWIFT refers to the Society for Worldwide Interbank Financial Telecommunication standard. Both describe the same 8 or 11-character code."
+    },
+    {
+      "q": "Can I validate IBAN with this API?",
+      "a": "This API validates SWIFT/BIC codes only. The SWIFT code is the bank identifier portion of international transfers. Use alongside IBAN validators for complete payment validation."
+    },
+    {
+      "q": "What's the response time?",
+      "a": "Typical latency is 50-150ms. All lookups are performed against cached institutional databases for optimal performance."
+    },
+    {
+      "q": "Does this support all countries?",
+      "a": "Yes, covers 200+ SWIFT-participating countries and territories including all major G20 nations and developing markets."
+    },
+    {
+      "q": "Is the data updated regularly?",
+      "a": "Database updates occur monthly to reflect new financial institutions and code changes published by SWIFT."
+    }
+  ],
+  "seo_keywords": [
+    "swift code lookup",
+    "bic code validator",
+    "swift bic api",
+    "bank identifier code",
+    "swift code decoder",
+    "international bank code",
+    "payment routing api",
+    "iban swift validation",
+    "wire transfer validator",
+    "cross-border payment api",
+    "financial institution lookup",
+    "swift code format",
+    "bic code lookup api",
+    "international remittance api",
+    "payment processor integration"
+  ]
+}
+```

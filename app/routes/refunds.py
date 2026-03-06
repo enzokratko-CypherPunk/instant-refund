@@ -1,3 +1,17 @@
+import os
+
+import secrets
+from typing import Optional
+from fastapi import Header, HTTPException, status
+
+async def require_api_key(x_api_key: Optional[str] = Header(None)) -> str:
+    valid_keys = [k.strip() for k in os.environ.get('API_KEYS','').split(',') if k.strip()]
+    if not x_api_key:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Missing X-API-Key header')
+    for vk in valid_keys:
+        if secrets.compare_digest(x_api_key.strip(), vk):
+            return x_api_key.strip()
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid API key')
 from __future__ import annotations
 
 from fastapi import APIRouter, Header, HTTPException

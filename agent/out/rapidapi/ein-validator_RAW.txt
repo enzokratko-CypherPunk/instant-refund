@@ -1,0 +1,79 @@
+```json
+{
+  "title": "EIN Validator API",
+  "short": "Validate US Employer Identification Numbers against IRS prefix rules in real-time.",
+  "long": "The EIN Validator API provides instant validation of US Employer Identification Numbers (EINs) against official IRS prefix assignment rules. Returns validation status, issuing campus location, and EIN prefix information. Essential for compliance workflows, business verification, and payroll processing systems.",
+  "tags": [
+    "ein-validation",
+    "compliance",
+    "business-verification",
+    "irs",
+    "tax-compliance",
+    "employer-identification",
+    "business-lookup",
+    "regulatory"
+  ],
+  "ex_request": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/ein/26-0000618'",
+  "ex_response": {
+    "valid": true,
+    "issuing_campus": "Philadelphia",
+    "prefix": "26"
+  },
+  "pricing": "Contact sales for volume pricing. Pay-as-you-go available.",
+  "apify_what": "API that validates US EINs against IRS prefix databases, returns validation status and issuing campus.",
+  "mcp_name": "ein_validator",
+  "apify_prompt": "Validate an EIN number using the Kratko EIN Validator API. Provide the EIN in format XX-XXXXXXX to check validity against IRS prefix rules.",
+  "apify_notes": "Returns boolean validation status plus issuing campus and prefix metadata. Single GET endpoint, no authentication required for demo.",
+  "seo_headline": "Real-Time EIN Validation API for Compliance & Business Verification",
+  "seo_summary": "Validate Employer Identification Numbers instantly against IRS rules. Get EIN prefix data and issuing campus information for compliance, payroll, and verification workflows.",
+  "seo_use_cases": [
+    "Compliance workflows requiring EIN validation before processing",
+    "Business verification in onboarding and KYC procedures",
+    "Payroll systems validating employer tax IDs",
+    "Third-party data validation and business registry lookups",
+    "Risk assessment and fraud prevention in financial platforms"
+  ],
+  "seo_api_example": "GET /v1/tools/ein/26-0000618 returns {\"valid\": true, \"issuing_campus\": \"Philadelphia\", \"prefix\": \"26\"}",
+  "seo_faqs": [
+    {
+      "q": "What is an EIN?",
+      "a": "An EIN (Employer Identification Number) is a unique nine-digit identifier issued by the IRS to identify business entities for tax purposes."
+    },
+    {
+      "q": "How accurate is the validation?",
+      "a": "Validation checks against official IRS prefix assignment rules. Prefix validation is highly accurate; however, this does not guarantee the EIN is currently active or in good standing."
+    },
+    {
+      "q": "Do you validate against a live IRS database?",
+      "a": "This API validates EIN structure and prefix rules. For real-time active status, use IRS EFTS verification tools."
+    },
+    {
+      "q": "What response time should I expect?",
+      "a": "Sub-50ms latency for typical requests. Suitable for real-time validation in onboarding flows."
+    },
+    {
+      "q": "Is authentication required?",
+      "a": "API key authentication required for production use. Demo endpoint available without keys."
+    },
+    {
+      "q": "Can I validate multiple EINs in one request?",
+      "a": "Currently single EIN per request. Batch endpoints available on enterprise plans."
+    }
+  ],
+  "seo_keywords": [
+    "EIN validator",
+    "EIN validation API",
+    "employer identification number validator",
+    "EIN lookup",
+    "EIN verification",
+    "IRS EIN validator",
+    "business EIN check",
+    "EIN format validator",
+    "EIN compliance",
+    "business verification API",
+    "tax ID validator",
+    "compliance API",
+    "KYC verification"
+  ]
+}
+```

@@ -1,4 +1,4 @@
-﻿from typing import Dict, Any
+from typing import Dict, Any
 import httpx
 
 CURRENCY_PRECISION: Dict[str, int] = {

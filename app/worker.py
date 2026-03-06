@@ -1,4 +1,7 @@
-﻿import os
+import logging
+
+logger = logging.getLogger(__name__)
+import os
 import time
 import base64
 import json
@@ -165,7 +168,7 @@ def broadcast_stub_and_get_txid(signed_b64: str, job_id: int) -> str:
 
 def main():
     init_schema_if_possible()
-    print("instant-refund-worker: started (delegated custody mode)")
+    logger.info("instant-refund-worker: started (delegated custody mode)")
 
     while True:
         job = None
@@ -185,13 +188,13 @@ def main():
             txid = broadcast_stub_and_get_txid(signed_b64, job["job_id"])
 
             mark_broadcast(job["job_id"], refund_id, txid)
-            print(f"broadcasted (stub): job_id={job['job_id']} refund_id={refund_id} txid={txid}")
+            logger.info(f"broadcasted (stub): job_id={job['job_id']} refund_id={refund_id} txid={txid}")
 
         except Exception as e:
             if job and "job_id" in job:
                 mark_retryable(job["job_id"], str(e), backoff_seconds=10)
             else:
-                print(f"worker error (no job claimed): {e}")
+                logger.info(f"worker error (no job claimed): {e}")
             time.sleep(POLL_SECONDS)
 
 if __name__ == "__main__":

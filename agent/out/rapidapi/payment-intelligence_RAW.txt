@@ -1,0 +1,101 @@
+```json
+{
+  "title": "Payment Intelligence API",
+  "short": "Analyze payment failures in real-time. Input BIN, decline code, MCC, and amount to get retry strategy, fraud risk scoring, and actionable recommendations.",
+  "long": "Payment Intelligence API provides full-spectrum transaction analysis for payment processors and fintech platforms. Submit card BIN, ISO 20022 decline codes, merchant category codes, and transaction amounts to receive: retry probability percentages optimized for success rates, fraud risk scores (0-100), and plain-English recommendations for next actions. Reduce declined transaction losses and improve authorization rates with data-driven retry logic.",
+  "tags": [
+    "payments",
+    "payment-processing",
+    "transaction-analysis",
+    "decline-codes",
+    "fraud-detection",
+    "retry-strategy",
+    "fintech",
+    "risk-scoring",
+    "BIN-lookup",
+    "MCC-analysis"
+  ],
+  "ex_request": {
+    "method": "GET",
+    "url": "https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/payment-intelligence?card_bin=411111&decline_code=51&merchant_mcc=5411&transaction_amount=250.0"
+  },
+  "ex_response": {
+    "recommendation": "Retry with 3D Secure verification; insufficient funds likely temporary",
+    "retry_probability_pct": 68,
+    "fraud_score": 12
+  },
+  "pricing": {
+    "model": "Pay-as-you-go",
+    "unit": "per-request",
+    "tiers": [
+      {
+        "volume": "0-10k/month",
+        "price": "$0.005"
+      },
+      {
+        "volume": "10k-100k/month",
+        "price": "$0.003"
+      },
+      {
+        "volume": "100k+/month",
+        "price": "Contact sales"
+      }
+    ]
+  },
+  "apify_what": "Real-time payment transaction analyzer that correlates BIN data, decline codes (ISO 20022), merchant category codes, and transaction amounts to generate retry recommendations and fraud risk assessments for payment processors.",
+  "mcp_name": "payment_intelligence",
+  "apify_prompt": "Analyze this payment transaction: card BIN {card_bin}, decline code {decline_code}, merchant MCC {merchant_mcc}, amount {transaction_amount}. Return: (1) plain-English recommendation for next action, (2) retry probability percentage (0-100), (3) fraud risk score (0-100).",
+  "apify_notes": "Requires at least one input parameter. Decline codes follow ISO 20022 standard (51=insufficient funds, 54=expired card, etc). MCC codes are 4-digit merchant category codes. Returns deterministic results based on established payment industry patterns.",
+  "seo_headline": "Payment Intelligence API: Real-Time Decline Code Analysis & Retry Optimization",
+  "seo_summary": "Reduce payment failure rates with intelligent transaction analysis. The Payment Intelligence API analyzes card BIN, decline codes, merchant categories, and amounts to deliver fraud risk scores, retry probabilities, and actionable recommendations—helping fintech platforms and payment processors recover lost revenue.",
+  "seo_use_cases": [
+    "Payment processors optimizing retry logic for declined transactions",
+    "Fintech platforms implementing intelligent decline code analysis",
+    "E-commerce platforms reducing involuntary churn from payment failures",
+    "Risk teams scoring fraud likelihood before retry attempts",
+    "Subscription platforms recovering failed billing with data-driven retry strategies",
+    "Cross-border payment processors handling region-specific decline patterns",
+    "Alternative payment networks analyzing merchant-specific approval rates"
+  ],
+  "seo_api_example": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/payment-intelligence?card_bin=411111&decline_code=51&merchant_mcc=5411&transaction_amount=250.0'",
+  "seo_faqs": [
+    {
+      "q": "What decline codes does the API support?",
+      "a": "ISO 20022 standard decline codes including 51 (insufficient funds), 54 (expired card), 05 (do not honor), 41 (lost card), 43 (stolen card), and 65 (activity limit exceeded)."
+    },
+    {
+      "q": "How accurate are retry probability predictions?",
+      "a": "Retry probabilities are derived from aggregate payment industry data and merchant-specific patterns. Accuracy improves with historical transaction context provided via MCC and amount parameters."
+    },
+    {
+      "q": "What's the fraud_score scale?",
+      "a": "Fraud scores range 0-100. Scores below 20 indicate low fraud risk, 20-50 moderate, 50-80 elevated, and 80+ high risk. Combines BIN reputation, decline code patterns, and MCC risk profiles."
+    },
+    {
+      "q": "Can I batch analyze multiple transactions?",
+      "a": "Current API accepts single transaction per request. Implement batching on client-side with concurrent requests or contact sales for bulk analysis endpoints."
+    },
+    {
+      "q": "Which payment networks are covered?",
+      "a": "API supports Visa, Mastercard, American Express, and Discover through BIN range analysis. Regional card schemes available on enterprise plans."
+    }
+  ],
+  "seo_keywords": [
+    "payment intelligence api",
+    "decline code analyzer",
+    "transaction retry api",
+    "payment failure analysis",
+    "fraud risk scoring",
+    "BIN lookup api",
+    "payment processor api",
+    "fintech payment tools",
+    "ISO 20022 decline codes",
+    "merchant category code analysis",
+    "payment authorization optimization",
+    "recovery rate optimization",
+    "payment decline recovery",
+    "smart retry strategy",
+    "payment risk assessment"
+  ]
+}
+```

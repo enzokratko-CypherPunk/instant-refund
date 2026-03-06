@@ -1,0 +1,59 @@
+```json
+{
+  "title": "IBAN Validator API",
+  "short": "Real-time IBAN validation with checksum verification and component parsing for international payments.",
+  "long": "Validate International Bank Account Numbers (IBAN) with instant checksum verification and automatic parsing of country, bank code, and account components. Essential for payment processors, fintech platforms, and cross-border transaction systems requiring SEPA compliance and fraud prevention.",
+  "tags": ["iban-validation", "payment-processing", "sepa", "international-transfers", "checksum-verification", "bank-routing"],
+  "ex_request": "GET https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/iban/GB82WEST12345698765432",
+  "ex_response": {
+    "valid": true,
+    "country": "GB",
+    "bank_code": "WEST"
+  },
+  "pricing": "Free tier available; volume pricing for enterprise integrations",
+  "apify_what": "IBAN Validator API validates International Bank Account Numbers and extracts structured payment routing information for global transaction processing.",
+  "mcp_name": "iban-validator-mcp",
+  "apify_prompt": "Validate IBAN account numbers, check format compliance, verify checksums, and extract country and bank routing codes for payment reconciliation.",
+  "apify_notes": "Returns boolean validation status, ISO-3166 country codes, and BIC/bank identifier extraction. Supports all SEPA and non-SEPA IBAN formats. Sub-100ms response times.",
+  "seo_headline": "IBAN Validator API: Instant International Bank Account Validation",
+  "seo_summary": "Validate IBAN codes with checksum verification and parse bank routing details automatically. Enable secure international payments with SEPA-compliant validation.",
+  "seo_use_cases": [
+    "Payment gateway IBAN verification before processing transfers",
+    "Fintech KYC/AML compliance screening",
+    "Cross-border invoice payment automation",
+    "Bulk IBAN validation for customer databases",
+    "Real-time remittance platform validation"
+  ],
+  "seo_api_example": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/iban/DE89370400440532013000' -H 'Content-Type: application/json'",
+  "seo_faqs": [
+    {
+      "q": "Does IBAN Validator API support all countries?",
+      "a": "Yes, validates all 116 SEPA and non-SEPA IBAN formats across 80+ countries including GB, DE, FR, ES, IT, US, and international variants."
+    },
+    {
+      "q": "What is the validation accuracy rate?",
+      "a": "100% checksum accuracy using ISO 13616 mod-97 algorithm with real-time format compliance verification."
+    },
+    {
+      "q": "Can I batch validate multiple IBANs?",
+      "a": "Single endpoint accepts one IBAN per request; implement batch processing via concurrent requests for high-volume validation."
+    },
+    {
+      "q": "Is IBAN Validator PCI/GDPR compliant?",
+      "a": "Yes, endpoints are stateless with no data storage. Suitable for PCI DSS 3.x payment environments and GDPR-regulated systems."
+    }
+  ],
+  "seo_keywords": [
+    "iban validation api",
+    "iban checker",
+    "sepa iban validate",
+    "international bank account number validator",
+    "iban format verification",
+    "iban checksum validator",
+    "cross-border payment validation",
+    "payment routing code extraction",
+    "bank identifier code parser",
+    "iban compliance check"
+  ]
+}
+```

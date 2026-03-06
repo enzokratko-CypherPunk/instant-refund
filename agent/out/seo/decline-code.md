@@ -1,0 +1,16 @@
+# Decline Code Interpreter API -- Payment Decline Code API: Real-Time Interpretation & Retry Guidance
+
+## Summary
+Stop guessing why payments fail. The Decline Code Interpreter API translates ISO 8583, Visa, Mastercard, Amex, and ACH decline codes into plain English with actionable retry logic. Reduce failed transaction ambiguity and improve payment success rates.
+
+## Why developers use this
+['E-commerce platforms: Deliver specific decline messages to customers (insufficient funds vs. fraud block) to reduce support tickets', 'Payment gateways: Route retryable declines to retry queues; mark permanent failures immediately', 'Fintech apps: Build transparent payment failure dashboards showing customers why their card declined', 'Subscription services: Identify temporary vs. permanent card issues for dunning logic optimization', 'Marketplace sellers: Provide seller-facing APIs to understand buyer payment failures']
+
+## API example
+curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/decline/05' -H 'Authorization: Bearer YOUR_API_KEY' → {"code":"05","meaning":"Do not honor","category":"card_expired_or_revoked","retryable":"false","suggested_message":"This card is no longer valid. Please use a different payment method."}
+
+## FAQs
+[{'q': 'What decline code formats does this API support?', 'a': "ISO 8583 (2-digit codes like 05, 51), Visa VRF (4-digit), Mastercard (2-digit), Amex (1-digit), Discover (2-digit), and ACH return codes. Submit any code—we'll identify the network and return the interpretation."}, {'q': 'Can I use this to build customer-facing error messages?', 'a': 'Yes. The API returns a merchant_action field with non-technical messaging templates suitable for customer-facing UI. Avoid exposing raw decline codes to customers.'}, {'q': 'Does the API tell me if I should retry a failed payment?', 'a': 'Yes. The retryable field is boolean. When true, include retry_after (seconds to wait). The API also returns optimal retry strategies per decline category.'}, {'q': 'How does this reduce failed transaction rates?', 'a': 'By distinguishing temporary issues (network timeouts, temporary blocks) from permanent ones (invalid card, expired), you can automatically retry or escalate appropriately, improving success rates by 5-15% on average.'}, {'q': 'Is this API PCI-DSS compliant?', 'a': "Yes. The API accepts decline codes only—never raw card data. It's designed for merchants, gateways, and payment processors who already handle card processing."}]
+
+## Keywords
+['decline code api', 'payment decline interpreter', 'card decline reason api', 'ISO 8583 decline codes', 'payment decline codes meaning', 'visa decline codes', 'mastercard decline codes', 'amex decline codes', 'payment processing api', 'card decline detection', 'retry logic payment', 'payment failure handling', 'fintech api', 'payment gateway api', 'transaction decline resolution', 'merchant api decline', 'insufficient funds detection', 'fraud block detection', 'card expired code', 'payment error codes reference']

@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 import csv
 import os
 from typing import Dict, Any

@@ -1,0 +1,78 @@
+```json
+{
+  "title": "Decline Code Interpreter API",
+  "short": "Translate payment decline codes into actionable insights with category classification and retry logic.",
+  "long": "The Decline Code Interpreter API converts cryptic payment processor decline codes (Visa, Mastercard, Amex, etc.) into human-readable meanings, automatic category classification, and retry recommendations. Instantly surface why transactions failed and guide users toward resolution without manual lookup tables.",
+  "tags": [
+    "payments",
+    "decline-codes",
+    "card-processing",
+    "error-handling",
+    "fintech",
+    "transaction-management",
+    "retry-logic"
+  ],
+  "ex_request": "GET https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/decline/51",
+  "ex_response": {
+    "code": "51",
+    "meaning": "Insufficient funds",
+    "category": "temporary",
+    "retryable": true,
+    "processor": "visa"
+  },
+  "pricing": "Usage-based: $0.01-0.05 per API call, bulk tiers available",
+  "apify_what": "Payment decline code translation and classification engine",
+  "mcp_name": "decline-code-interpreter",
+  "apify_prompt": "Use this tool to decode payment decline codes and determine retry eligibility. Input any decline code from card networks; receive meaning, category (temporary/permanent/fraud), and retry guidance for customer-facing messaging.",
+  "apify_notes": "Supports ISO 8583 decline codes, network-specific codes (Visa, Mastercard, Amex, Discover), and processor-agnostic interpretation. Returns retry boolean for intelligent retry logic implementation.",
+  "seo_headline": "Decode Payment Decline Codes Instantly | Decline Code Interpreter API",
+  "seo_summary": "Stop guessing why payments fail. The Decline Code Interpreter API translates all payment decline codes into plain English with automatic categorization and smart retry recommendations. Perfect for fintech platforms, payment gateways, and e-commerce solutions.",
+  "seo_use_cases": [
+    "E-commerce platforms: Surface specific decline reasons at checkout to reduce cart abandonment",
+    "Payment gateways: Automate decline code classification for routing and retry workflows",
+    "Fintech apps: Provide users with clear, actionable failure messages instead of error codes",
+    "Subscription services: Identify temporary vs permanent declines to optimize recovery campaigns",
+    "Marketplace platforms: Route customer support workflows based on decline category"
+  ],
+  "seo_api_example": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/decline/51' -H 'Authorization: Bearer YOUR_API_KEY' | jq '.'\n\nResponse:\n{\n  \"code\": \"51\",\n  \"meaning\": \"Insufficient funds in cardholder account\",\n  \"category\": \"temporary\",\n  \"retryable\": true,\n  \"guidance\": \"Customer should attempt transaction after funds are available\"\n}",
+  "seo_faqs": [
+    {
+      "question": "What decline code formats are supported?",
+      "answer": "Supports ISO 8583 codes, Visa decline codes (51-91), Mastercard (5xxx), Amex (A-Z codes), Discover, and processor-specific formats."
+    },
+    {
+      "question": "How accurate is the retry recommendation?",
+      "answer": "Based on card network specifications and processor behavior. Temporary declines (insufficient funds, velocity limits) are retryable; permanent declines (expired card, fraud flags) are not."
+    },
+    {
+      "question": "Can I integrate this with my existing payment processor?",
+      "answer": "Yes. Use this API as a middleware layer to interpret decline codes from Stripe, Square, Braintree, PayPal, or any ISO 8583-compliant processor."
+    },
+    {
+      "question": "Does this API provide fraud detection?",
+      "answer": "No. It classifies fraud-related decline codes (e.g., suspected fraud, card restricted) but doesn't perform fraud analysis itself."
+    },
+    {
+      "question": "What's the response time?",
+      "answer": "Sub-50ms average latency. Suitable for real-time checkout flows and synchronous retry logic."
+    }
+  ],
+  "seo_keywords": [
+    "decline code api",
+    "payment decline interpreter",
+    "card decline reason",
+    "iso 8583 decline codes",
+    "visa decline codes",
+    "mastercard decline codes",
+    "payment failure reasons",
+    "decline code lookup",
+    "transaction decline classification",
+    "retry logic api",
+    "payment decline messaging",
+    "fintech decline handling",
+    "e-commerce payment errors",
+    "decline code translation",
+    "payment decline recovery"
+  ]
+}
+```

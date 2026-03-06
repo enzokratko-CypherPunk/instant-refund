@@ -1,4 +1,4 @@
-﻿import httpx
+import httpx
 from typing import Optional
 
 COINGECKO_BASE = "https://api.coingecko.com/api/v3"
@@ -37,7 +37,7 @@ async def get_token_price(token: str, currency: str = "usd") -> dict:
                     "include_last_updated_at": "true",
                 }
             )
-        data = r.json()
+        data = r.raise_for_status() r.json()
         if coin_id not in data:
             return {"status": "error", "message": f"Token '{token}' not found. Try using the full CoinGecko ID (e.g. 'bitcoin')."}
 

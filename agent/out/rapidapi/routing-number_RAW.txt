@@ -1,0 +1,89 @@
+```json
+{
+  "title": "Routing Number Validator API",
+  "short": "Validate US ABA routing numbers and identify issuing banks and Federal Reserve districts in real-time.",
+  "long": "The Routing Number Validator API enables instant verification of US ABA routing numbers with bank identification and Federal Reserve district lookup. Validate routing number formats, confirm active financial institutions, and retrieve routing intelligence for payment processing, ACH transactions, and banking integrations.",
+  "tags": [
+    "payments",
+    "routing-number",
+    "aba",
+    "bank-validation",
+    "ach",
+    "fintech",
+    "wire-transfer",
+    "banking-api"
+  ],
+  "ex_request": "GET https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/routing/021000021",
+  "ex_response": {
+    "valid": true,
+    "bank_name": "Federal Reserve Bank of New York",
+    "fed_district": "2"
+  },
+  "pricing": "Contact for volume-based enterprise pricing. Ideal for payment processors, fintech platforms, and banking integrations.",
+  "apify_what": "Real-time ABA routing number validation with bank identification and Federal Reserve district mapping for payment processing systems.",
+  "mcp_name": "routing-number-validator",
+  "apify_prompt": "Validate a US ABA routing number and retrieve the issuing bank name and Federal Reserve district. Input: 9-digit routing number string. Returns: validation status, bank name, and Fed district assignment.",
+  "apify_notes": "Supports all active US routing numbers. Validates ABA format (9 digits). Fast response for high-volume payment workflows. Returns standardized Fed district codes (1-12).",
+  "seo_headline": "ABA Routing Number Validator API | Instant Bank Identification & Fed District Lookup",
+  "seo_summary": "Validate routing numbers instantly, identify issuing banks, and map Federal Reserve districts. Essential API for ACH payments, wire transfers, and payment processing integrations. Real-time verification with Kratko Fintech Tools.",
+  "seo_use_cases": [
+    "ACH payment validation before processing",
+    "Wire transfer routing verification",
+    "Bank account verification workflows",
+    "Payment gateway routing number checks",
+    "Fintech platform compliance validation",
+    "Treasury management system integration",
+    "Recurring payment setup verification",
+    "Cross-border payment routing intelligence"
+  ],
+  "seo_api_example": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/routing/021000021' -H 'Authorization: Bearer YOUR_API_KEY' | Validates the routing number for Federal Reserve Bank of New York, returns bank name and Fed district 2.",
+  "seo_faqs": [
+    {
+      "q": "What is a routing number?",
+      "a": "A 9-digit code assigned by the American Bankers Association (ABA) to identify specific US financial institutions for payment routing."
+    },
+    {
+      "q": "How do I validate a routing number with this API?",
+      "a": "Send a GET request with the 9-digit routing number to the /v1/tools/routing/{routing_number} endpoint. Returns validation status, bank name, and Fed district."
+    },
+    {
+      "q": "What are Federal Reserve districts?",
+      "a": "The 12 regional divisions of the US Federal Reserve System. Each district number (1-12) corresponds to a geographic banking region for clearance operations."
+    },
+    {
+      "q": "Can this API validate international routing codes?",
+      "a": "No, this API validates US ABA routing numbers only. For international payments, use SWIFT codes or IBAN validation."
+    },
+    {
+      "q": "What response time should I expect?",
+      "a": "Sub-100ms average response time for routing number validation, suitable for real-time payment processing workflows."
+    },
+    {
+      "q": "Is the routing number database updated regularly?",
+      "a": "Yes, the API validates against current US banking institution records and reflects Fed routing assignments."
+    }
+  ],
+  "seo_keywords": [
+    "routing number validator",
+    "aba routing number lookup",
+    "bank routing number api",
+    "routing number validation",
+    "aba routing number validator",
+    "federal reserve routing",
+    "banking routing api",
+    "acH routing verification",
+    "wire transfer routing",
+    "payment routing validation",
+    "bank routing check",
+    "routing number check api",
+    "aba number lookup",
+    "fed district routing",
+    "fintech routing api",
+    "payment processing routing",
+    "banking compliance api",
+    "routing number verification service",
+    "bank identification routing",
+    "instant routing validation"
+  ]
+}
+```

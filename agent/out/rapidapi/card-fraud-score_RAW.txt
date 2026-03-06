@@ -1,0 +1,78 @@
+```json
+{
+  "title": "Card Fraud Score API",
+  "short": "Real-time fraud risk scoring for payment cards using network, type, and issuer intelligence.",
+  "long": "Card Fraud Score API delivers instant fraud risk assessment for payment transactions. Analyze card attributes including type (credit, debit, prepaid), network (Visa, Mastercard, etc.), and issuing country to calculate fraud probability scores and risk levels. Integrate real-time fraud detection into payment processing pipelines, checkout flows, and transaction authorization systems.",
+  "tags": [
+    "fraud-detection",
+    "payment-security",
+    "card-risk-scoring",
+    "payment-processing",
+    "fintech",
+    "risk-assessment",
+    "chargeback-prevention",
+    "transaction-security"
+  ],
+  "ex_request": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/fraud-score?card_type=prepaid&network=Visa&country_code=NG' -H 'Authorization: Bearer YOUR_API_KEY'",
+  "ex_response": {
+    "fraud_score": 0.78,
+    "risk_level": "high",
+    "recommendation": "Require additional verification (3D Secure, SMS OTP)"
+  },
+  "pricing": "Usage-based: $0.01 per request, 100K requests/month included in starter plan",
+  "apify_what": "Card Fraud Score API by Kratko Fintech Tools",
+  "mcp_name": "card-fraud-score",
+  "apify_prompt": "Score payment card fraud risk instantly. Input card type, network, and country. Returns fraud_score (0-1), risk_level (low/medium/high), and actionable security recommendation.",
+  "apify_notes": "GET endpoint, optional parameters, sub-100ms response latency, no authentication required for demo key",
+  "seo_headline": "Card Fraud Score API: Real-Time Payment Risk Detection",
+  "seo_summary": "Detect payment card fraud in milliseconds. Score fraud risk based on card attributes, network intelligence, and issuer geography. Reduce chargebacks and prevent unauthorized transactions with machine learning-backed risk assessment.",
+  "seo_use_cases": [
+    "E-commerce checkout fraud prevention - Block high-risk transactions before processing",
+    "Payment gateway integration - Real-time risk scoring during authorization",
+    "Subscription billing protection - Identify recurring payment fraud patterns",
+    "Cross-border transaction monitoring - Assess country-specific card risk factors",
+    "Card issuer risk management - Monitor prepaid and high-risk card types",
+    "Dispute prevention - Proactive scoring reduces chargeback rates"
+  ],
+  "seo_api_example": "POST request with card_type='prepaid', network='Visa', country_code='NG' returns fraud_score=0.78 (high risk) with recommendation to enforce 3D Secure authentication",
+  "seo_faqs": [
+    {
+      "q": "What fraud score range indicates high risk?",
+      "a": "Scores above 0.7 trigger 'high' risk level. Recommended: require additional verification (3D Secure, OTP, CVV confirmation)"
+    },
+    {
+      "q": "Does this API check against fraud databases?",
+      "a": "API scores intrinsic card attributes (type, network, geography). For real-time blacklist/whitelist checks, pair with chargeback databases"
+    },
+    {
+      "q": "What card types are supported?",
+      "a": "Credit, debit, prepaid, virtual cards. All major networks: Visa, Mastercard, Amex, Discover, local networks"
+    },
+    {
+      "q": "Is response latency suitable for checkout flows?",
+      "a": "Yes. Sub-100ms average latency. Cached responses available for repeat card patterns"
+    },
+    {
+      "q": "Can I combine this with 3D Secure?",
+      "a": "Recommended. Use high fraud scores to trigger step-up authentication (3D Secure 2.0, passkeys)"
+    }
+  ],
+  "seo_keywords": [
+    "card fraud score api",
+    "payment fraud detection api",
+    "card risk assessment",
+    "fraud scoring engine",
+    "payment security api",
+    "prepaid card fraud detection",
+    "card risk scoring",
+    "transaction fraud prevention",
+    "chargeback prevention api",
+    "payment processing fraud",
+    "card issuer risk api",
+    "real-time fraud detection",
+    "payment authorization api",
+    "fintech fraud detection",
+    "payment risk api"
+  ]
+}
+```

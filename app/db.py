@@ -1,4 +1,9 @@
+
 from __future__ import annotations
+import re as _re
+
+def _redact_url(url: str) -> str:
+    return _re.sub(r'(:)[^:@]+(@)', r'\1***\2', url)
 
 import os
 from contextlib import contextmanager

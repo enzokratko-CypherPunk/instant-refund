@@ -7,3 +7,5 @@ psycopg2-binary
 ecdsa
 grpcio
 protobuf
+
+slowapi>=0.1.9

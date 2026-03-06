@@ -1,0 +1,120 @@
+```json
+{
+  "title": "ISO 8583 Parser API",
+  "short": "Parse ISO 8583 financial transaction messages into structured JSON with field enrichment",
+  "long": "Convert raw ISO 8583 banking and payment transaction messages into machine-readable JSON. Automatically parses Message Type Indicator (MTI), bitmap fields, and transaction data with human-readable field names and descriptions. Supports all ISO 8583-1987, 1993, 2003 variants for payment processing, ATM, POS, and clearing systems.",
+  "tags": [
+    "payments",
+    "iso8583",
+    "financial-data",
+    "banking",
+    "transaction-processing",
+    "message-parser",
+    "payment-gateway",
+    "fintech-infrastructure"
+  ],
+  "ex_request": {
+    "url": "https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/iso8583/0100b23c449d05a8020012000000000000000121234567890123456d2412312001012345678",
+    "method": "GET",
+    "description": "Parse ISO 8583 authorization request message"
+  },
+  "ex_response": {
+    "mti": "0100",
+    "fields": {
+      "3": {
+        "name": "Processing Code",
+        "value": "000000",
+        "description": "Purchase transaction"
+      },
+      "11": {
+        "name": "STAN",
+        "value": "123456",
+        "description": "System Trace Audit Number"
+      },
+      "12": {
+        "name": "Time",
+        "value": "241231",
+        "description": "Local transaction time (HHMMSS)"
+      },
+      "13": {
+        "name": "Date",
+        "value": "2001",
+        "description": "Local transaction date (MMDD)"
+      },
+      "35": {
+        "name": "Track 2 Data",
+        "value": "4012345678901234d24123120010123456789",
+        "description": "Card data with PAN and expiry"
+      }
+    },
+    "status": "parsed",
+    "field_count": 8
+  },
+  "pricing": {
+    "model": "pay-as-you-go",
+    "per_request": "$0.001",
+    "monthly_minimum": "none",
+    "volume_discounts": "Available for 10K+ monthly requests"
+  },
+  "apify_what": "ISO 8583 Parser API automatically decodes raw financial transaction messages into structured JSON, extracting MTI, field indicators, and transaction details with semantic enrichment.",
+  "mcp_name": "ISO8583Parser",
+  "apify_prompt": "Parse this ISO 8583 transaction message and return structured JSON with field names, descriptions, and values: {message}",
+  "apify_notes": "Supports multi-variant ISO 8583 (1987, 1993, 2003). Handles variable-length fields, bitmap parsing, and EBCDIC/ASCII encoding. Returns field semantics for payment processing, clearing, ATM, and POS transactions.",
+  "seo_headline": "ISO 8583 Parser API: Decode Payment Messages to JSON in Real-Time",
+  "seo_summary": "Parse ISO 8583 financial transaction messages instantly. Convert raw banking protocols to structured JSON with automatic field mapping, MTI decoding, and transaction metadata enrichment for payment processors and fintech platforms.",
+  "seo_use_cases": [
+    "Payment gateway integration and message validation",
+    "ATM transaction log parsing and analysis",
+    "POS system message debugging and monitoring",
+    "Banking network clearing and settlement",
+    "Card transaction audit and compliance reporting",
+    "Payment protocol reverse engineering and testing",
+    "Multi-acquirer transaction normalization",
+    "Real-time transaction monitoring and fraud detection"
+  ],
+  "seo_api_example": "curl -X GET 'https://instant-refund-api-l99qr.ondigitalocean.app/v1/tools/iso8583/0100b23c449d05a8020012000000000000000121234567890123456d2412312001012345678' -H 'Authorization: Bearer YOUR_API_KEY'",
+  "seo_faqs": [
+    {
+      "q": "What ISO 8583 versions does this API support?",
+      "a": "Supports ISO 8583-1987, 1993, and 2003 specifications across all message types and variants."
+    },
+    {
+      "q": "Can this parser handle variable-length fields?",
+      "a": "Yes. Automatically detects and parses variable-length fields with proper length indicators."
+    },
+    {
+      "q": "Does it work with EBCDIC-encoded messages?",
+      "a": "Yes. Detects encoding and handles both ASCII and EBCDIC transaction messages."
+    },
+    {
+      "q": "What transaction types are supported?",
+      "a": "All MTI types: authorization (01xx), financial (02xx), reversal (04xx), reconciliation (08xx), and administrative (09xx) messages."
+    },
+    {
+      "q": "Is sensitive card data masked in responses?",
+      "a": "Full data returned; implement PCI-DSS compliant masking in your application."
+    },
+    {
+      "q": "Can I batch parse multiple messages?",
+      "a": "Currently single-message per request. Contact support for batch endpoint options."
+    }
+  ],
+  "seo_keywords": [
+    "ISO 8583 parser",
+    "ISO 8583 decoder API",
+    "payment message parser",
+    "banking protocol parser",
+    "financial transaction API",
+    "MTI decoder",
+    "ISO8583 JSON converter",
+    "payment gateway API",
+    "transaction message parsing",
+    "fintech API",
+    "POS message parser",
+    "ATM transaction parser",
+    "card transaction API",
+    "payment processing API",
+    "clearing system API"
+  ]
+}
+```
